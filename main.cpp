@@ -51,6 +51,8 @@ int main(int argc, char *argv[]) {
     // Display all students to confirm deletion
     dbOps.displayAllStudents();
 
+    dbOps.closeDatabaseConnection();
+
     //return a.exec();
     return 0;
 }

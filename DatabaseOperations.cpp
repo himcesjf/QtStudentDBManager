@@ -11,6 +11,14 @@ DatabaseOperations::DatabaseOperations() {
     db.open();
 }
 
+// Destructor: Closes the database connection when the object is destroyed.
+DatabaseOperations::~DatabaseOperations() {
+    if (db.isOpen()) {
+        db.close();
+        qDebug() << "Database connection closed.";
+    }
+}
+
 // createTable: Creates a new table named 'student_table' in the database if it doesn't exist.
 void DatabaseOperations::createTable() {
     QSqlQuery query;
@@ -82,5 +90,13 @@ void DatabaseOperations::deleteAllStudents() {
     QSqlQuery query;
     query.exec("DELETE FROM student_table");
     qDebug() << "All student records deleted";
+}
+
+// Close the database connection explicitly.
+void DatabaseOperations::closeDatabaseConnection() {
+    if (db.isOpen()) {
+        db.close();
+        qDebug() << "Database connection closed.";
+    }
 }
 
