@@ -1,0 +1,2 @@
+# Hashes of file build rules.
+5cd804c431b0a4d9262132e28a3ec6f5 CMakeFiles/QtStudentDBManager_autogen
