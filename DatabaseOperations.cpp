@@ -33,28 +33,52 @@ void DatabaseOperations::createTable() {
 
 // insertStudent: Prepares and execute SQL query to insert a student's data into the database.
 void DatabaseOperations::insertStudent(const Student &student) {
-    QSqlQuery query;
-    query.prepare("INSERT INTO student_table (firstName, lastName, middleName, roll, class) "
-                  "VALUES (?, ?, ?, ?, ?)"); //https://doc.qt.io/qt-6/qsqlquery.html
-    query.addBindValue(QVariant(student.getFirstName()));
-    query.addBindValue(QVariant(student.getLastName()));
-    query.addBindValue(QVariant(student.getMiddleName()));
-    query.addBindValue(QVariant(student.getRoll()));
-    query.addBindValue(QVariant(student.getClass()));
-    qDebug() << "\nInserting record for student ID" << student.getId();
-    query.exec();
+    //Exception handling
+    try{
+        QSqlQuery query;
+        query.prepare("INSERT INTO student_table (firstName, lastName, middleName, roll, class) "
+                    "VALUES (?, ?, ?, ?, ?)"); //https://doc.qt.io/qt-6/qsqlquery.html
+
+        //Serialization
+        query.addBindValue(QVariant(student.getFirstName()));
+        query.addBindValue(QVariant(student.getLastName()));
+        query.addBindValue(QVariant(student.getMiddleName()));
+        query.addBindValue(QVariant(student.getRoll()));
+        query.addBindValue(QVariant(student.getClass()));
+
+        qDebug() << "\nInserting record for student ID" << student.getId();
+
+        if(!query.exec()) {
+            throw std::runtime_error(query.lastError().text().toStdString());
+            }
+        } catch (const std::runtime_error& e) {
+            qDebug() << "Database error in insertStudent: " << e.what();
+    }
 }
+
 
 // updateStudent: Updates student's record in the database using the student's ID.
 void DatabaseOperations::updateStudent(const Student &student) {
-    QSqlQuery query;
-    query.prepare("UPDATE student_table SET firstName = ?, lastName = ? WHERE id = ?");
-    query.addBindValue(QVariant(student.getFirstName()));
-    query.addBindValue(QVariant(student.getLastName()));
-    query.addBindValue(QVariant(student.getId()));
-    qDebug() << "\nUpdating records for student ID" << student.getId();
-    query.exec();
+    //Exception handling
+    try{
+        QSqlQuery query;
+        query.prepare("UPDATE student_table SET firstName = ?, lastName = ? WHERE id = ?");
+
+        //Serialization
+        query.addBindValue(QVariant(student.getFirstName()));
+        query.addBindValue(QVariant(student.getLastName()));
+        query.addBindValue(QVariant(student.getId()));
+
+        qDebug() << "\nUpdating records for student ID" << student.getId();
+
+        if(!query.exec()) {
+            throw std::runtime_error(query.lastError().text().toStdString());
+            }
+        } catch (const std::runtime_error& e) {
+            qDebug() << "Database error in updateStudent: " << e.what();
+    }
 }
+
 
 // displayAllStudents: Displays all student records from the database.
 void DatabaseOperations::displayAllStudents() {
@@ -74,6 +98,10 @@ void DatabaseOperations::displayAllStudents() {
         int id = query.value("id").toInt();
         qDebug() << "ID:" << id << "Name:" << firstName << lastName << middleName << "Roll:" << roll << "Class:" << studentClass;
     } while (query.next());
+
+    if (query.lastError().isValid()) {
+        qDebug() << "Database error in displayAllStudents: " << query.lastError().text();
+    }
 }
 
 // deleteStudent: Deletes a student's record from the database using the student's ID.
