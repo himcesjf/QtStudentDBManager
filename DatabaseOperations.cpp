@@ -7,7 +7,7 @@
 
 // Constructor: Initializes the database connection using SQLite and opens 'students.db'.
 DatabaseOperations::DatabaseOperations() {
-    db = QSqlDatabase::addDatabase("QSQLITE");
+    db = QSqlDatabase::addDatabase("QSQLITE", "MyConnection");
     db.setDatabaseName("students.db");
     db.open();
 }
@@ -29,7 +29,8 @@ void DatabaseOperations::createTable() {
                "lastName TEXT, "
                "middleName TEXT, "
                "roll INTEGER, "
-               "class TEXT)");
+               "class TEXT, "
+               "marks INTEGER)");
 }
 
 // insertStudent: Prepares and execute SQL query to insert a student's data into the database.
@@ -37,7 +38,7 @@ void DatabaseOperations::insertStudent(const Student &student) {
     //Exception handling
     try{
         QSqlQuery query;
-        query.prepare("INSERT INTO student_table (firstName, lastName, middleName, roll, class) VALUES (?, ?, ?, ?, ?)"); //https://doc.qt.io/qt-6/qsqlquery.html
+        query.prepare("INSERT INTO student_table (firstName, lastName, middleName, roll, class, marks) VALUES (?, ?, ?, ?, ?, ?)"); //https://doc.qt.io/qt-6/qsqlquery.html
 
         //Serialization
         query.addBindValue(QVariant(student.getFirstName()));
@@ -45,6 +46,7 @@ void DatabaseOperations::insertStudent(const Student &student) {
         query.addBindValue(QVariant(student.getMiddleName()));
         query.addBindValue(QVariant(student.getRoll()));
         query.addBindValue(QVariant(student.getClass()));
+        query.addBindValue(QVariant(student.getMarks()));
 
         qDebug() << "\nInserting record for student ID" << student.getId();
 
@@ -122,6 +124,7 @@ QList<Student> DatabaseOperations::displayAllStudents() {
         student.setMiddleName(query.value("middleName").toString());
         student.setRoll(query.value("roll").toInt());
         student.setClass(query.value("class").toString());
+        student.setMarks(query.value("marks").toInt());
         studentsList.append(student);
     } while (query.next());
 

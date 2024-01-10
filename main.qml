@@ -1,11 +1,16 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
+import com.mycompany.student 1.0
 
 ApplicationWindow {
     title: "Student Management System"
     width: 800
     height: 600
     visible: true
+
+    StudentModel {
+        id: studentModel
+    }
 
     StackView {
         id: stackView

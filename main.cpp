@@ -12,7 +12,10 @@ int main(int argc, char *argv[]) {
     StudentModel studentModel;
 
     // Expose StudentModel to QML
-    engine.rootContext()->setContextProperty("studentModel", &studentModel);
+    //engine.rootContext()->setContextProperty("studentModel", &studentModel);
+
+    //
+    qmlRegisterType<StudentModel>("com.mycompany.student", 1, 0, "StudentModel");
 
     // Load the main QML file
     const QUrl url(QStringLiteral("qrc:/main.qml"));
