@@ -7,20 +7,22 @@
 
 // DatabaseOperations class handles all database related operations
 class DatabaseOperations {
-public:
-    DatabaseOperations();
-    ~DatabaseOperations(); // Destructor to close the database connection
+    public:
+        DatabaseOperations();
+        ~DatabaseOperations(); // Destructor to close the database connection
 
-    void createTable();
-    void insertStudent(const Student &student);
-    void updateStudent(const Student &student);
-    void displayAllStudents();
-    void deleteStudent(int id);
-    void deleteAllStudents();
-    void closeDatabaseConnection();
+        void createTable();
+        void insertStudent(const Student &student);
+        void updateStudent(const Student &student);
+        //void displayAllStudents();
+        QList<Student> displayAllStudents();
+        void deleteStudent(int id);
+        void deleteAllStudents();
+        void closeDatabaseConnection();
 
-private:
-    QSqlDatabase db;
+
+    private:
+        QSqlDatabase db;
 };
 
 #endif // DATABASEOPERATIONS_H

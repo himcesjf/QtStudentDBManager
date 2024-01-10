@@ -16,8 +16,9 @@ int main(int argc, char *argv[]) {
 
     // Load the main QML file - BrowseStudents.qml
     // The home screen will be the the browse students view; App starts with this view.
-    const QUrl url(QStringLiteral("qrc:/BrowseStudents.qml"));
+    const QUrl url(QStringLiteral("qrc:/main.qml"));
     engine.load(url);
+    //engine.load(QUrl(QStringLiteral("qrc:/MinimalExample.qml")));
 
     if (engine.rootObjects().isEmpty())
         return -1;

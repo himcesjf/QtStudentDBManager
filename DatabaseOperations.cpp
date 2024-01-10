@@ -1,6 +1,7 @@
 // DatabaseOperations.cpp
 #include "DatabaseOperations.h"
 #include <QSqlQuery>
+#include <QSqlError>
 #include <QVariant>
 #include <QDebug>
 
@@ -81,7 +82,7 @@ void DatabaseOperations::updateStudent(const Student &student) {
 
 
 // displayAllStudents: Displays all student records from the database.
-void DatabaseOperations::displayAllStudents() {
+/*void DatabaseOperations::displayAllStudents() {
     QSqlQuery query("SELECT * FROM student_table");
 
     if (!query.next()) {
@@ -102,7 +103,38 @@ void DatabaseOperations::displayAllStudents() {
     if (query.lastError().isValid()) {
         qDebug() << "Database error in displayAllStudents: " << query.lastError().text();
     }
+} */
+
+
+QList<Student> DatabaseOperations::displayAllStudents() {
+    QList<Student> studentsList;
+    QSqlQuery query("SELECT * FROM student_table");
+
+    if (!query.next()) {
+        qDebug() << "No Records";
+        return studentsList;
+    }
+
+    do {
+        Student student;
+        student.setId(query.value("id").toInt());
+        student.setFirstName(query.value("firstName").toString());
+        student.setLastName(query.value("lastName").toString());
+        student.setMiddleName(query.value("middleName").toString());
+        student.setRoll(query.value("roll").toInt());
+        student.setClass(query.value("class").toString());
+        studentsList.append(student);
+    } while (query.next());
+
+    if (query.lastError().isValid()) {
+        qDebug() << "Database error in displayAllStudents: " << query.lastError().text();
+    }
+
+    return studentsList;
 }
+
+
+
 
 // deleteStudent: Deletes a student's record from the database using the student's ID.
 void DatabaseOperations::deleteStudent(int id) {
