@@ -1,8 +1,0 @@
-/home/himcesjf/Code/Acumen/Assignments/Day1/QtStudentDBManager/build/CMakeFiles/QtStudentDBManager.dir
-/home/himcesjf/Code/Acumen/Assignments/Day1/QtStudentDBManager/build/CMakeFiles/edit_cache.dir
-/home/himcesjf/Code/Acumen/Assignments/Day1/QtStudentDBManager/build/CMakeFiles/rebuild_cache.dir
-/home/himcesjf/Code/Acumen/Assignments/Day1/QtStudentDBManager/build/CMakeFiles/list_install_components.dir
-/home/himcesjf/Code/Acumen/Assignments/Day1/QtStudentDBManager/build/CMakeFiles/install.dir
-/home/himcesjf/Code/Acumen/Assignments/Day1/QtStudentDBManager/build/CMakeFiles/install/local.dir
-/home/himcesjf/Code/Acumen/Assignments/Day1/QtStudentDBManager/build/CMakeFiles/install/strip.dir
-/home/himcesjf/Code/Acumen/Assignments/Day1/QtStudentDBManager/build/CMakeFiles/QtStudentDBManager_autogen.dir

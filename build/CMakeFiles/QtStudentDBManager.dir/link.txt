@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/QtStudentDBManager.dir/QtStudentDBManager_autogen/mocs_compilation.cpp.o CMakeFiles/QtStudentDBManager.dir/main.cpp.o CMakeFiles/QtStudentDBManager.dir/Student.cpp.o CMakeFiles/QtStudentDBManager.dir/DatabaseOperations.cpp.o -o QtStudentDBManager  /usr/lib64/libQt5Sql.so.5.15.11 /usr/lib64/libQt5Core.so.5.15.11 
