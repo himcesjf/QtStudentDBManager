@@ -14,8 +14,7 @@ int main(int argc, char *argv[]) {
     // Expose StudentModel to QML
     engine.rootContext()->setContextProperty("studentModel", &studentModel);
 
-    // Load the main QML file - BrowseStudents.qml
-    // The home screen will be the the browse students view; App starts with this view.
+    // Load the main QML file
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     engine.load(url);
     //engine.load(QUrl(QStringLiteral("qrc:/MinimalExample.qml")));

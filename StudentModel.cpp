@@ -31,8 +31,10 @@ QVariant StudentModel::data(const QModelIndex &index, int role) const {
             return student.getRoll();
         case ClassRole:
             return student.getClass();
-        case SubjectMarksRole:
-            return QVariant::fromValue(student.getSubjectMarks());
+        //case SubjectMarksRole:
+          //  return QVariant::fromValue(student.getSubjectMarks());
+        case MarksRole:
+            return student.getMarks();
         default:
             return QVariant();
     }
@@ -46,7 +48,8 @@ QHash<int, QByteArray> StudentModel::roleNames() const {
     roles[MiddleNameRole] = "middleName";
     roles[RollRole] = "roll";
     roles[ClassRole] = "class";
-    roles[SubjectMarksRole] = "subjectMarks";
+    //roles[SubjectMarksRole] = "subjectMarks";
+    roles[MarksRole] = "marks";
     return roles;
 }
 
@@ -60,23 +63,40 @@ Student StudentModel::getStudentById(int id) const {
     return Student(); // Return an empty Student object if not found
 }
 
-void StudentModel::addStudent(const QString& firstName, const QString& lastName) {
+void StudentModel::addStudent(const QString& firstName, const QString& lastName,
+                              const QString& middleName, int roll, const QString& cls,
+                              /*const QMap<QString, double>& subjectMarks)*/ int marks) {
     Student newStudent;
     newStudent.setFirstName(firstName);
     newStudent.setLastName(lastName);
+    newStudent.setMiddleName(middleName);
+    newStudent.setRoll(roll);
+    newStudent.setClass(cls);
+    //newStudent.setSubjectMarks(subjectMarks);
+    newStudent.setMarks(marks);
+
     dbOps.insertStudent(newStudent);
+
     // Refresh the model data - reloads the entire student list from the database
     beginResetModel();
     students = dbOps.displayAllStudents();
     endResetModel();
 }
 
-void StudentModel::updateStudent(int id, const QString& firstName, const QString& lastName) {
-    // Find the student, update details, and call dbOps.updateStudent
+void StudentModel::updateStudent(int id, const QString& firstName, const QString& lastName,
+                                 const QString& middleName, int roll, const QString& cls,
+                                 /*const QMap<QString, double>& subjectMarks)*/ int marks) {
+    // Find the student and update details
     for (auto& student : students) {
         if (student.getId() == id) {
             student.setFirstName(firstName);
             student.setLastName(lastName);
+            student.setMiddleName(middleName);
+            student.setRoll(roll);
+            student.setClass(cls);
+            //student.setSubjectMarks(subjectMarks);
+            student.setMarks(marks);
+
             dbOps.updateStudent(student);
             break;
         }
@@ -86,6 +106,7 @@ void StudentModel::updateStudent(int id, const QString& firstName, const QString
     students = dbOps.displayAllStudents();
     endResetModel();
 }
+
 
 void StudentModel::deleteStudent(int id) {
     dbOps.deleteStudent(id);

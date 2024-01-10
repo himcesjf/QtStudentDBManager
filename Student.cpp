@@ -10,7 +10,8 @@ void Student::setMiddleName(const QString &name) { middleName = name; }
 void Student::setId(int newId) { id = newId; }
 void Student::setRoll(int newRoll) { roll = newRoll; }
 void Student::setClass(const QString &cls) { studentClass = cls; }
-void Student::setSubjectMarks(const QMap<QString, double> &marks) { subjectMarks = marks; }
+//void Student::setSubjectMarks(const QMap<QString, double> &marks) { subjectMarks = marks; }
+void Student::setMarks(int marks) { this->marks = marks; }
 
 //Getters
 QString Student::getFirstName() const { return firstName; }
@@ -19,4 +20,5 @@ QString Student::getMiddleName() const { return middleName; }
 int Student::getId() const { return id; }
 int Student::getRoll() const { return roll; }
 QString Student::getClass() const { return studentClass; }
-QMap<QString, double> Student::getSubjectMarks() const { return subjectMarks; }
+//QMap<QString, double> Student::getSubjectMarks() const { return subjectMarks; }
+int Student::getMarks() const { return marks; }

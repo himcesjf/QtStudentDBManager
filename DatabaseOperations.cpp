@@ -37,8 +37,7 @@ void DatabaseOperations::insertStudent(const Student &student) {
     //Exception handling
     try{
         QSqlQuery query;
-        query.prepare("INSERT INTO student_table (firstName, lastName, middleName, roll, class) "
-                    "VALUES (?, ?, ?, ?, ?)"); //https://doc.qt.io/qt-6/qsqlquery.html
+        query.prepare("INSERT INTO student_table (firstName, lastName, middleName, roll, class) VALUES (?, ?, ?, ?, ?)"); //https://doc.qt.io/qt-6/qsqlquery.html
 
         //Serialization
         query.addBindValue(QVariant(student.getFirstName()));

@@ -16,7 +16,8 @@ public:
         MiddleNameRole,
         RollRole,
         ClassRole,
-        SubjectMarksRole
+        //SubjectMarksRole
+        MarksRole
     };
 
     StudentModel(QObject *parent = nullptr);
@@ -26,8 +27,12 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
     Q_INVOKABLE Student getStudentById(int id) const;
-    Q_INVOKABLE void addStudent(const QString& firstName, const QString& lastName);
-    Q_INVOKABLE void updateStudent(int id, const QString& firstName, const QString& lastName);
+    Q_INVOKABLE void addStudent(const QString& firstName, const QString& lastName,
+                                const QString& middleName, int roll,
+                                const QString& cls, /*const QMap<QString, double>& subjectMarks*/ int marks);
+    Q_INVOKABLE void updateStudent(int id, const QString& firstName, const QString& lastName,
+                                   const QString& middleName, int roll,
+                                   const QString& cls, /*const QMap<QString, double>& subjectMarks*/ int marks);
     Q_INVOKABLE void deleteStudent(int id);
 
 private:

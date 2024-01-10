@@ -62,9 +62,9 @@ Item {
             text: isEditMode ? "Update" : "Add"
             onClicked: {
                 if (isEditMode) {
-                    studentModel.updateStudent(currentStudent.id, firstNameField.text, lastNameField.text)
+                    studentModel.updateStudent(currentStudent.id, firstNameField.text, lastNameField.text,middleNameField.text, rollField.text, classField.text)
                 } else {
-                    studentModel.addStudent(firstNameField.text, lastNameField.text)
+                    studentModel.addStudent(firstNameField.text, lastNameField.text, middleNameField.text, rollField.text, classField.text )
                 }
                 visible = false
             }

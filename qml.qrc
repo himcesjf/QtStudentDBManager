@@ -1,6 +1,8 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>StudentForm.qml</file>
+        <file>StudentsListView.qml</file>
+        <file>AddStudentForm.qml</file>
+        <file>UpdateStudentForm.qml</file>
     </qresource>
 </RCC>

@@ -16,7 +16,8 @@ public:
     void setId(int newId);
     void setRoll(int newRoll);
     void setClass(const QString &cls);
-    void setSubjectMarks(const QMap<QString, double> &marks);
+    //void setSubjectMarks(const QMap<QString, double> &marks);
+    void setMarks(int marks);
 
     //Getters
     QString getFirstName() const;
@@ -25,7 +26,8 @@ public:
     int getId() const;
     int getRoll() const;
     QString getClass() const;
-    QMap<QString, double> getSubjectMarks() const;
+    //QMap<QString, double> getSubjectMarks() const;
+    int getMarks() const;
 
 private:
     QString firstName;
@@ -34,7 +36,8 @@ private:
     int id;
     int roll;
     QString studentClass;
-    QMap<QString, double> subjectMarks;
+    //QMap<QString, double> subjectMarks;
+    int marks;
 };
 
 #endif // STUDENT_H
