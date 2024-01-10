@@ -12,7 +12,7 @@ ApplicationWindow {
     ListView {
         id: listView
         anchors.fill: parent
-        model: studentModel // Your StudentModel
+        model: studentModel
 
         delegate: Item {
             width: listView.width
@@ -20,7 +20,7 @@ ApplicationWindow {
             RowLayout {
                 Text { text: "ID: " + studentId }
                 Text { text: "Name: " + firstName + " " + lastName }
-                // Include other student details as needed
+
                 Button {
                     text: "Edit"
                     onClicked: {
