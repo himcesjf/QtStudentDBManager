@@ -1,0 +1,6 @@
+/home/himcesjf/Code/Acumen/Assignments/Network_Minimal/build/CMakeFiles/server.dir
+/home/himcesjf/Code/Acumen/Assignments/Network_Minimal/build/CMakeFiles/client.dir
+/home/himcesjf/Code/Acumen/Assignments/Network_Minimal/build/CMakeFiles/edit_cache.dir
+/home/himcesjf/Code/Acumen/Assignments/Network_Minimal/build/CMakeFiles/rebuild_cache.dir
+/home/himcesjf/Code/Acumen/Assignments/Network_Minimal/build/CMakeFiles/server_autogen.dir
+/home/himcesjf/Code/Acumen/Assignments/Network_Minimal/build/CMakeFiles/client_autogen.dir
