@@ -43,7 +43,7 @@ The application consists of two main components:
 
 #### Response Handling
 - Displays "Successfully saved" upon receiving an "OK" response from the server.
-- Shows an error message in case of saving failure or connectivity issues.
+- If there's an error or a problem in connecting with the server, it shows: "Failed to save, please contact administrator".
 
 ## Data Flow and Processing
 ### From Database to GUI
