@@ -1,1 +1,24 @@
-/build
+# Compiled object files
+*.o
+*.obj
+
+# Compiled executable binaries
+*.exe
+*.out
+*.dll
+
+# Build directories
+build/
+release/
+debug/
+
+# Qt-specific files
+*.pro.user
+*.qmake.stash
+
+# Backup & temporary files
+*~
+*.swp
+
+# Other files to ignore
+.DS_Store
