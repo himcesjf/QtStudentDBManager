@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <!-- UI components -->
+        <file alias="main.qml">main.qml</file>
+        <file alias="StudentForm.qml">StudentForm.qml</file>
+        <file alias="StudentView.qml">StudentView.qml</file>
+    </qresource>
+</RCC>
