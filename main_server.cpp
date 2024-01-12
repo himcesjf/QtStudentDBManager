@@ -1,11 +1,20 @@
+//main_server.cpp
 #include <QCoreApplication>
 #include <QTcpServer>
 #include <QTcpSocket>
 #include "Student.h"
 
+#include "Settings.h"
+#include <QDebug>
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
+
+    Settings settings;
+    qDebug() << QString("Listening on %1:%2")
+            .arg(settings.value("server/host").toString())
+            .arg(settings.value("server/port").toString());
 
     // Create Student objects on the heap
     QVector<Student*> students;
