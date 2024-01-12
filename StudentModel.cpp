@@ -1,9 +1,14 @@
 #include "StudentModel.h"
+#include "Settings.h"
+
+#include <QTcpSocket>
+
 #include <algorithm>
 
 StudentModel::StudentModel(QObject *parent)
     : QAbstractTableModel(parent)
 {
+    loadFromServer();
 }
 
 StudentModel::~StudentModel()
@@ -24,8 +29,11 @@ int StudentModel::columnCount(const QModelIndex & /*parent*/) const
 
 QVariant StudentModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid())
+    Q_UNUSED(role);
+
+    if (!index.isValid() || index.row() < 0 || index.row() >= m_students.length()) {
         return QVariant();
+    }
 
     const Student *student = m_students.at(index.row());
     switch (index.column()) {
@@ -65,10 +73,43 @@ QVariant StudentModel::headerData(int section, Qt::Orientation orientation, int 
     }
 }
 
+void StudentModel::loadFromServer()
+{
+    qDebug() << "Loading data from server ...";
+
+    Settings &settings = Settings::instance();
+
+    QTcpSocket *socket = new QTcpSocket {this};
+    socket->connectToHost(QHostAddress(settings.value("server/host").toString()),
+        settings.value("server/port").toUInt());
+
+    QObject::connect(socket, &QTcpSocket::connected, this, [=]() {
+        qDebug() << QString("Connected to %1:%2.")
+            .arg(socket->peerAddress().toString())
+            .arg(socket->peerPort());
+    });
+
+    QObject::connect(socket, &QTcpSocket::readyRead, this, [=]() {
+            QDataStream in(socket);
+            in.setVersion(QDataStream::Qt_6_0);
+
+            while (!in.atEnd()) {
+                Student *student = new Student;
+                in >> *student;
+                qDebug() << "Received student:" << student->firstName() << student->lastName();
+                addStudent(student);
+            }
+    });
+
+    QObject::connect(socket, &QTcpSocket::disconnected, this, [=]() {
+        socket->deleteLater();
+    });
+}
 
 void StudentModel::addStudent(Student *student)
 {
     beginInsertRows(QModelIndex(), m_students.size(), m_students.size());
+    qDebug() << "Inserting student:" << student->firstName() << student->lastName();
     m_students.append(student);
     endInsertRows();
 }

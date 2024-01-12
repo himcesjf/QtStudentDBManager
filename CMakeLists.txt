@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.14)
-project(QtNetworkExample)
+project(QtStudentDBManager)
 
 # Find the required Qt packages
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core Network Widgets Qml Quick)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Network Widgets Qml Quick)
-
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)

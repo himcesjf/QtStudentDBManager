@@ -1,7 +1,12 @@
 #include "Student.h"
 
 Student::Student(QObject *parent, const QString &firstName, const QString &middleName, const QString &lastName, int roll, const QString &className)
-    : QObject(parent), m_firstName(firstName), m_middleName(middleName), m_lastName(lastName), m_roll(roll), m_className(className)
+    : QObject(parent),
+    m_firstName(firstName),
+    m_middleName(middleName),
+    m_lastName(lastName),
+    m_roll(roll),
+    m_className(className)
 {
 }
 

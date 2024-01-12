@@ -9,41 +9,44 @@
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
+    QCoreApplication app {argc, argv};
 
-    Settings settings;
-    qDebug() << QString("Listening on %1:%2")
-            .arg(settings.value("server/host").toString())
-            .arg(settings.value("server/port").toString());
+    Settings& settings = Settings::instance();
 
     // Create Student objects on the heap
     QVector<Student*> students;
-    students.append(new Student(nullptr, "John", "Doe"));
-    students.append(new Student(nullptr, "Jane", "Doe"));
+    students.append(new Student(&app, "John", "Doe"));
+    students.append(new Student(&app, "Jane", "Doe"));
 
     // Setup server
     QTcpServer server;
-    server.listen(QHostAddress::Any, 12345);
+    server.listen(QHostAddress(settings.value("server/host").toString()),
+        settings.value("server/port").toUInt());
+
+    qDebug() << QString("Listening on %1:%2.")
+            .arg(server.serverAddress().toString())
+            .arg(server.serverPort());
+
     QObject::connect(&server, &QTcpServer::newConnection, [&]() {
+        qDebug() << "New client connected.";
+
         QTcpSocket *clientConnection = server.nextPendingConnection();
         QObject::connect(clientConnection, &QTcpSocket::disconnected,
                          clientConnection, &QTcpSocket::deleteLater);
 
         QDataStream out(clientConnection);
-        out.setVersion(QDataStream::Qt_5_0);
+        out.setVersion(QDataStream::Qt_6_0);
 
         // Send each student
         for (Student *student : std::as_const(students)) {
+            qDebug() << "Sending student:" << student->firstName() << student->lastName();
             out << *student;
         }
+
         clientConnection->disconnectFromHost();
     });
 
-    int result = a.exec();
-
-    // Clean up
-    qDeleteAll(students);
-    students.clear();
+    int result = app.exec();
 
     return result;
 }

@@ -1,5 +1,4 @@
-#ifndef STUDENT_H
-#define STUDENT_H
+#pragma once
 
 #include <QObject>
 #include <QDataStream>
@@ -60,5 +59,3 @@ inline QDataStream &operator>>(QDataStream &in, Student &student) {
     student.deserialize(in);
     return in;
 }
-
-#endif // STUDENT_H

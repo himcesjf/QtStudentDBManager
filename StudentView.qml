@@ -40,11 +40,11 @@ Item {
             required property bool current
             required property bool selected
             color: row === table.currentRow ? palette.highlight : palette.base
-            
+
             Label {
                 x: 4
                 anchors.verticalCenter: parent.verticalCenter
-                text: display 
+                text: display
             }
         }
 
@@ -58,7 +58,7 @@ Item {
             onTapped: (eventPoint, button) =>  {
                 if (!table.childAt(eventPoint.x, eventPoint.y)) {
                     table.selectionModel.clear();
-                }     
+                }
             }
         }
     }

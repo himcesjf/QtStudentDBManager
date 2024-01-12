@@ -1,8 +1,9 @@
-#ifndef STUDENTMODEL_H
-#define STUDENTMODEL_H
+#pragma once
 
 #include <QAbstractTableModel>
 #include "Student.h"
+
+class Settings;
 
 class StudentModel : public QAbstractTableModel
 {
@@ -21,7 +22,7 @@ public:
     void clearStudents();
 
 private:
+    void loadFromServer();
+
     QVector<Student*> m_students;
 };
-
-#endif // STUDENTMODEL_H

@@ -22,8 +22,8 @@ ApplicationWindow {
 
         width: parent.width - drawer.width
 
-        model: StudentModel { 
-            id: studentModel 
+        model: StudentModel {
+            id: studentModel
 
             onRowsInserted: view.selectionModel.setCurrentIndex(index(rowCount() - 1, 0),
                 ItemSelectionModel.SelectCurrent)

@@ -1,31 +1,35 @@
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#pragma once
 
 #include <QSettings>
 #include <QStandardPaths>
-#include <QFileInfo>
+#include <QDebug>
 
 class Settings : public QSettings {
 public:
+    static Settings& instance() {
+        static Settings instance;
+        return instance;
+    }
+
+    Settings(const Settings&) = delete;
+    Settings& operator=(const Settings&) = delete;
+
+private:
     Settings() : QSettings(getIniFilePath(), QSettings::IniFormat) {
         setDefaults();
     }
 
-private:
     static QString getIniFilePath() {
         QString configPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
-        return configPath + "/studentmanager.ini";
+        return configPath + "/qtstudentdbmanager.ini";
     }
 
     void setDefaults() {
-        // Set default values if they don't exist
         if (!contains("server/host")) {
-            setValue("server/host", "localhost"); // Replace with actual default IP
+            setValue("server/host", "127.0.0.1");
         }
         if (!contains("server/port")) {
-            setValue("server/port", 12345); // Replace with actual default port number
+            setValue("server/port", 12345);
         }
     }
 };
-
-#endif // SETTINGS_H

@@ -22,11 +22,11 @@ GridLayout {
         if (currentRow > -1) {
             console.log("Syncing form to row:", currentRow);
 
-            firstName.text = model.data(model.index(currentRow, 1));
-            lastName.text = model.data(model.index(currentRow, 2));
-            middleName.text = model.data(model.index(currentRow, 3));
-            roll.text = model.data(model.index(currentRow, 4));
-            className.text = model.data(model.index(currentRow, 5));
+            firstName.text = model.data(model.index(currentRow, 0));
+            lastName.text = model.data(model.index(currentRow, 1));
+            middleName.text = model.data(model.index(currentRow, 2));
+            roll.text = model.data(model.index(currentRow, 3));
+            className.text = model.data(model.index(currentRow, 4));
         } else {
             console.log("Clearing form.")
 
@@ -34,7 +34,7 @@ GridLayout {
             lastName.text = "";
             middleName.text = "";
             roll.text = "";
-            className.text = "";     
+            className.text = "";
         }
     }
 
@@ -77,7 +77,7 @@ GridLayout {
         Layout.fillWidth: true
         placeholderText: "Enter a roll ..."
     }
-    
+
     Label { Layout.row: 4; Layout.column: 0; text: "Class:" }
 
     TextField {
@@ -102,12 +102,12 @@ GridLayout {
             privateData.syncToCurrentRow = false;
             model.insertRows(model.rowCount(), 1);
         }
-            
-        model.setData(model.index(currentRow, 1), firstName.text);
-        model.setData(model.index(currentRow, 2), lastName.text);
-        model.setData(model.index(currentRow, 3), middleName.text);
-        model.setData(model.index(currentRow, 4), roll.text);
-        model.setData(model.index(currentRow, 5), className.text);
+
+        model.setData(model.index(currentRow, 0), firstName.text);
+        model.setData(model.index(currentRow, 1), lastName.text);
+        model.setData(model.index(currentRow, 2), middleName.text);
+        model.setData(model.index(currentRow, 3), roll.text);
+        model.setData(model.index(currentRow, 4), className.text);
 
         model.submit();
 
