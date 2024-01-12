@@ -1,3 +1,4 @@
+//main_client.cpp
 #include <QApplication>
 #include <QTcpSocket>
 #include <QTableView>
@@ -5,14 +6,27 @@
 #include "StudentModel.h"
 #include "Student.h"
 
+#include "Settings.h"
+#include <QDebug>
+
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
+    /*
     // Load server settings
     QSettings settings("config.ini", QSettings::IniFormat);
     QString serverAddress = settings.value("Server/address", "localhost").toString();
-    int serverPort = settings.value("Server/port", 12345).toInt();
+    int serverPort = settings.value("Server/port",12345).toInt();
+    */
+
+    Settings settings;
+    QString serverAddress = settings.value("server/host").toString();
+    int serverPort = settings.value("server/port").toInt();
+    qDebug() << QString("Connecting to %1:%2")
+            .arg(settings.value("server/host").toString())
+            .arg(settings.value("server/port").toString());
+
 
     // Setup the model
     StudentModel model;

@@ -1,3 +1,4 @@
+//Student.cpp
 #include "Student.h"
 
 Student::Student(QObject *parent, const QString &firstName, const QString &lastName)
