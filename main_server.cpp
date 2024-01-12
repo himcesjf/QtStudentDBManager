@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
         out.setVersion(QDataStream::Qt_5_0);
 
         // Send each student
-        for (Student *student : qAsConst(students)) {
+        for (Student *student : std::as_const(students)) {
             out << *student;
         }
         clientConnection->disconnectFromHost();
