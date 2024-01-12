@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.14)
-
 project(StudentManager LANGUAGES CXX)
 
-set(CMAKE_PREFIX_PATH "/home/himcesjf/Qt/6.6.1/gcc_64")
+# Find the required Qt packages
+find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core Network Widgets Qml Quick)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Network Widgets Qml Quick)
 
 add_definitions(
   -DSTUDENTMANAGER_DOMAIN_NAME="\"com.himanshu.${PROJECT_LOWERCASE_NAME}\""
