@@ -37,7 +37,7 @@ The application consists of two main components:
 - Sends Student data to the server for saving and awaits a response.
 
 #### User Interface
-- Utilizes a GUI, potentially reusing code from previous assignments.
+- Utilizes a GUI - [QtStudentDBManager_gui_using_QSqlTableModel project](https://github.com/himcesjf/QtStudentDBManager/tree/gui_using_QSqlTableModel)
 
 #### Data Sending
 - Serializes Student data and sends it to the server.
