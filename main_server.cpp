@@ -15,8 +15,8 @@ int main(int argc, char *argv[])
 
     // Create Student objects on the heap
     QVector<Student*> students;
-    students.append(new Student(&app, "John", "Doe"));
-    students.append(new Student(&app, "Jane", "Doe"));
+    students.append(new Student(&app, 1, "John", "S", "Doe", 101, "English"));
+    students.append(new Student(&app, 2, "Jane", "K", "Doe", 102, "Science"));
 
     // Setup server
     QTcpServer server;

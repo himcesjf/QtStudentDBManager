@@ -1,13 +1,23 @@
 #include "Student.h"
 
-Student::Student(QObject *parent, const QString &firstName, const QString &middleName, const QString &lastName, int roll, const QString &className)
+Student::Student(QObject *parent, int id, const QString &firstName, const QString &middleName, const QString &lastName, int roll, const QString &className)
     : QObject(parent),
-    m_firstName(firstName),
-    m_middleName(middleName),
-    m_lastName(lastName),
-    m_roll(roll),
-    m_className(className)
+      m_id(id),
+      m_firstName(firstName),
+      m_middleName(middleName),
+      m_lastName(lastName),
+      m_roll(roll),
+      m_className(className)
 {
+}
+
+
+int Student::id() const {
+    return m_id;
+}
+
+void Student::setId(int id) {
+    m_id = id;
 }
 
 QString Student::firstName() const {
@@ -50,7 +60,7 @@ QString Student::className() const {
 }
 
 void Student::setClassName(const QString &className) {
-    m_lastName = className;
+    m_className = className;
 }
 
 
