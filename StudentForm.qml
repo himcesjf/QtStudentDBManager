@@ -48,24 +48,24 @@ GridLayout {
         placeholderText: "Enter a first name ..."
     }
 
-    Label { Layout.row: 1; Layout.column: 0; text: "Last name:" }
-
-    TextField {
-        id: lastName
-        Layout.row: 1
-        Layout.column: 1
-        Layout.fillWidth: true
-        placeholderText: "Enter a last name ..."
-    }
-
-    Label { Layout.row: 2; Layout.column: 0; text: "Middle name:" }
+    Label { Layout.row: 1; Layout.column: 0; text: "Middle name:" }
 
     TextField {
         id: middleName
-        Layout.row: 2
+        Layout.row: 1
         Layout.column: 1
         Layout.fillWidth: true
         placeholderText: "Enter a middle name ..."
+    }
+
+    Label { Layout.row: 2; Layout.column: 0; text: "Last name:" }
+
+    TextField {
+        id: lastName
+        Layout.row: 2
+        Layout.column: 1
+        Layout.fillWidth: true
+        placeholderText: "Enter a last name ..."
     }
 
     Label { Layout.row: 3; Layout.column: 0; text: "Roll:" }

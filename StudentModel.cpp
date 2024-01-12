@@ -19,21 +19,29 @@ int StudentModel::rowCount(const QModelIndex & /*parent*/) const
 
 int StudentModel::columnCount(const QModelIndex & /*parent*/) const
 {
-    return 2; // First Name, Last Name
+    return 5; // First Name, Middle Name, Last Name, Roll, Class Name
 }
 
 QVariant StudentModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid() || role != Qt::DisplayRole)
+    if (!index.isValid())
         return QVariant();
 
     const Student *student = m_students.at(index.row());
-    if (index.column() == 0)
+    switch (index.column()) {
+    case 0:
         return student->firstName();
-    else if (index.column() == 1)
+    case 1:
+        return student->middleName();
+    case 2:
         return student->lastName();
-
-    return QVariant();
+    case 3:
+        return student->roll();
+    case 4:
+        return student->className();
+    default:
+        return QVariant();
+    }
 }
 
 QVariant StudentModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -41,13 +49,22 @@ QVariant StudentModel::headerData(int section, Qt::Orientation orientation, int 
     if (role != Qt::DisplayRole || orientation != Qt::Horizontal)
         return QVariant();
 
-    if (section == 0)
-        return "First Name";
-    else if (section == 1)
-        return "Last Name";
-
-    return QVariant();
+    switch (section) {
+        case 0:
+            return "First Name";
+        case 1:
+            return "Middle Name";
+        case 2:
+            return "Last Name";
+        case 3:
+            return "Roll";
+        case 4:
+            return "Class";
+        default:
+            return QVariant();
+    }
 }
+
 
 void StudentModel::addStudent(Student *student)
 {
