@@ -1,7 +1,7 @@
 # Client-Server Application for Student Record Management
 
 ## Overview
-- This project builds upon the [QtStudentDBManager network_basic project](https://github.com/himcesjf/QtStudentDBManager/tree/network_basic),taking a step up in demonstrating an advnaced client-server architecture using Qt 6.
+- This project builds upon the [QtStudentDBManager network_basic project](https://github.com/himcesjf/QtStudentDBManager/tree/network_basic), taking a step up in demonstrating an advnaced client-server architecture using Qt 6.
 - This is designed to manage Student records, interfacing with a PostgreSQL database and a graphical user interface (GUI).
 
 ## Components
