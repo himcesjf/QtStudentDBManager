@@ -1,7 +1,7 @@
 # Client-Server Application for Student Display
 
 ## Overview
-- This project represents an advanced iteration of the [QtStudentDBManager network_minimal project](https://github.com/himcesjf/QtStudentDBManager/tree/network_minimal), taking a step up in demonstrating a basic client-server architecture using Qt 6.
+- This project builds upon the [QtStudentDBManager network_minimal project](https://github.com/himcesjf/QtStudentDBManager/tree/network_minimal), taking a step up in demonstrating a basic client-server architecture using Qt 6.
 - Focusing on network communication and GUI display, it showcases a networked data exchange where a server sends serialized student data to a client for visualization. 
 - Highlights key concepts in Qt network programming, dynamic memory management, and model-view design patterns. 
 
@@ -11,14 +11,14 @@
 
 ## Data Flow and Processing
 1. **Server Side**:
-   - Holds `Student` data within a QVector.
-   - Serializes `Student` objects into a byte stream for network transmission using QDataStream.
+   - Holds `Student` data within a `QVector`.
+   - Serializes `Student` objects into a byte stream for network transmission using `QDataStream`.
    - Sends this data to connected client applications.
 2. **Client Side**:
    - Connects to the server and requests data.
-   - Receives and deserializes the byte stream back into `Student` objects in a QVector.
+   - Receives and deserializes the byte stream back into `Student` objects in a `QVector`.
    - Utilizes `StudentModel`, a subclass of `QAbstractTableModel`, to manage and display data
-   - Displays the data in a QTableView
+   - Displays the data in a `QTableView`.
 
 ## Additional Features
 - **Memory Management**: Uses dynamic allocation for `Student` objects to optimize memory usage.
