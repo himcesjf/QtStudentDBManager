@@ -14,9 +14,9 @@ int main(int argc, char *argv[])
     Settings& settings = Settings::instance();
 
     // Create Student objects on the heap
-    QVector<Student*> example_students;
-    example_students.append(new Student(&app, 1, "John", "S", "Doe", 101, "English"));
-    example_students.append(new Student(&app, 2, "Jane", "K", "Doe", 102, "Science"));
+    QVector<Student*> exampleStudents;
+    exampleStudents.append(new Student(&app, 1, "John", "S", "Doe", 101, "English"));
+    exampleStudents.append(new Student(&app, 2, "Jane", "K", "Doe", 102, "Science"));
 
     // Setup server
     QTcpServer server;
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
         out.setVersion(QDataStream::Qt_6_0);
 
         // Send each student
-        for (const Student *student : std::as_const(example_students)) {
+        for (const Student *student : std::as_const(exampleStudents)) {
             qDebug() << "Sending student:" << student->id() << student->firstName() << student->middleName() << student->lastName() << student->roll() << student->className();
             out << *student;
         }
