@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 
         // Send each student
         for (Student *student : std::as_const(students)) {
-            qDebug() << "Sending student:" << student->firstName() << student->lastName();
+            qDebug() << "Sending student:" << student->id() << student->firstName() << student->middleName() << student->lastName() << student->roll() << student->className();
             out << *student;
         }
 

@@ -100,7 +100,7 @@ void StudentModel::loadFromServer()
             while (!in.atEnd()) {
                 Student *student = new Student;
                 in >> *student;
-                qDebug() << "Received student:" << student->id() << student->firstName() << student->middleName() << student->lastName() << student->roll() << student->className() ;
+                qDebug() << "Received student:" << student->id() << student->firstName() << student->middleName() << student->lastName() << student->roll() << student->className();
                 addStudent(student);
             }
     });
@@ -113,7 +113,7 @@ void StudentModel::loadFromServer()
 void StudentModel::addStudent(Student *student)
 {
     beginInsertRows(QModelIndex(), m_students.size(), m_students.size());
-    qDebug() << "Inserting student:" << student->firstName() << student->lastName();
+    qDebug() << "Inserting student:" << student->id() << student->firstName() << student->middleName() << student->lastName() << student->roll() << student->className();
     m_students.append(student);
     endInsertRows();
 }
