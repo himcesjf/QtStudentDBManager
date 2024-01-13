@@ -63,12 +63,10 @@ void Student::setClassName(const QString &className) {
     m_className = className;
 }
 
-
-
 void Student::serialize(QDataStream &out) const {
-    out << m_firstName << m_lastName << m_middleName << m_roll << m_className;
+    out << m_id << m_firstName << m_lastName << m_middleName << m_roll << m_className;
 }
 
 void Student::deserialize(QDataStream &in) {
-    in >> m_firstName >> m_lastName >> m_middleName >> m_roll >> m_className;
+    in >> m_id >> m_firstName >> m_lastName >> m_middleName >> m_roll >> m_className;
 }

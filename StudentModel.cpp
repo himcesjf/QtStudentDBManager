@@ -24,7 +24,7 @@ int StudentModel::rowCount(const QModelIndex & /*parent*/) const
 
 int StudentModel::columnCount(const QModelIndex & /*parent*/) const
 {
-    return 5; // First Name, Middle Name, Last Name, Roll, Class Name
+    return 6; // ID, First Name, Middle Name, Last Name, Roll, Class Name
 }
 
 QVariant StudentModel::data(const QModelIndex &index, int role) const
@@ -38,14 +38,16 @@ QVariant StudentModel::data(const QModelIndex &index, int role) const
     const Student *student = m_students.at(index.row());
     switch (index.column()) {
     case 0:
-        return student->firstName();
+        return student->id();
     case 1:
-        return student->middleName();
+        return student->firstName();
     case 2:
-        return student->lastName();
+        return student->middleName();
     case 3:
-        return student->roll();
+        return student->lastName();
     case 4:
+        return student->roll();
+    case 5:
         return student->className();
     default:
         return QVariant();
@@ -59,14 +61,16 @@ QVariant StudentModel::headerData(int section, Qt::Orientation orientation, int 
 
     switch (section) {
         case 0:
-            return "First Name";
+            return "ID";
         case 1:
-            return "Middle Name";
+            return "First Name";
         case 2:
-            return "Last Name";
+            return "Middle Name";
         case 3:
-            return "Roll";
+            return "Last Name";
         case 4:
+            return "Roll";
+        case 5:
             return "Class";
         default:
             return QVariant();
@@ -96,7 +100,7 @@ void StudentModel::loadFromServer()
             while (!in.atEnd()) {
                 Student *student = new Student;
                 in >> *student;
-                qDebug() << "Received student:" << student->firstName() << student->lastName();
+                qDebug() << "Received student:" << student->id() << student->firstName() << student->middleName() << student->lastName() << student->roll() << student->className() ;
                 addStudent(student);
             }
     });

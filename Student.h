@@ -24,6 +24,10 @@ public:
                      const QString &className = QString()
                      );
 
+
+    int id() const;
+    void setId(int id);
+
     QString firstName() const;
     void setFirstName(const QString &firstName);
 
@@ -38,9 +42,6 @@ public:
 
     QString className() const;
     void setClassName(const QString &className);
-
-    int id() const;
-    void setId(int id);
 
     // Serialization
     void serialize(QDataStream &out) const;
