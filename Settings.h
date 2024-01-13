@@ -1,3 +1,5 @@
+// Note: Make sure to delete the config file before every change as this code only changes value if the parameters don't exist at all
+
 #pragma once
 
 #include <QSettings>
