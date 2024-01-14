@@ -37,11 +37,18 @@ int main(int argc, char *argv[])
         QDataStream out(clientConnection);
         out.setVersion(QDataStream::Qt_6_0);
 
+        QObject::connect(clientConnection, &QTcpSocket::readyRead, [clientConnection]() {
+            QByteArray message = clientConnection->readAll();
+            qDebug() << "Message received from client:" << message;
+        });
+
         // Send each student
         for (const Student *student : std::as_const(exampleStudents)) {
             qDebug() << "Sending student:" << student->id() << student->firstName() << student->middleName() << student->lastName() << student->roll() << student->className();
             out << *student;
         }
+
+
 
         //clientConnection->disconnectFromHost();
     });
