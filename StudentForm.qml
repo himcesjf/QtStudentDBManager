@@ -97,6 +97,17 @@ GridLayout {
         onClicked: form.sync()
     }
 
+    Button {
+    Layout.row: 6
+    Layout.columnSpan: 2
+    Layout.fillWidth: true
+    text: "Hello Server!"
+    onClicked: {
+        studentModel.sendDataToServer()
+    }
+}
+
+
     function sync() {
         if (currentRow < 0) {
             privateData.syncToCurrentRow = false;

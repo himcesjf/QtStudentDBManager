@@ -24,6 +24,9 @@ public:
 
     Q_INVOKABLE void connectToServer();
 
+public slots:
+    Q_INVOKABLE void sendDataToServer();
+
 private Q_SLOTS:
     void loadFromServer();
 

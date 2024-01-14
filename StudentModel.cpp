@@ -116,6 +116,16 @@ void StudentModel::connectToServer()
 }
 
 
+void StudentModel::sendDataToServer() {
+// Test hello message to the server from client upon connection
+    if (m_socket && m_socket->isOpen()) {
+        QByteArray message = "Hello from GUI client!";
+        m_socket->write(message);
+        qDebug() << "Message sent to server:" << message;
+    }
+}
+
+
 void StudentModel::loadFromServer()
 {
     qDebug() << "Loading data from server ...";
