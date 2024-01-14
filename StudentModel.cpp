@@ -190,18 +190,22 @@ bool StudentModel::setData(const QModelIndex &index, const QVariant &value, int 
         return false;
     }
 
-    // Serialize and send updated Student data to server
-    QDataStream out(m_socket);
-    out.setVersion(QDataStream::Qt_6_0);
-    for (const Student* student : m_students){
-        out << *student;
-        qDebug() << "Sending updated student data from GUI client to server:"
-                        << student->id()
-                        << student->firstName()
-                        << student->middleName()
-                        << student->lastName()
-                        << student->roll()
-                        << student->className();
+    if (m_socket && m_socket->isOpen()){
+        // Serialize and send updated Student data to server
+        QDataStream out(m_socket);
+        out.setVersion(QDataStream::Qt_6_0);
+        for (const Student* student : m_students){
+            out << *student;
+            qDebug() << "Sending updated student data from GUI client to server:"
+                            << student->id()
+                            << student->firstName()
+                            << student->middleName()
+                            << student->lastName()
+                            << student->roll()
+                            << student->className();
+        }
+    } else {
+        qDebug() << "Failed to send updated data: Socket is not valid or not open";
     }
 
     // Notify the view about data change
