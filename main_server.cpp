@@ -48,8 +48,6 @@ int main(int argc, char *argv[])
             out << *student;
         }
 
-
-
         //clientConnection->disconnectFromHost();
     });
 
