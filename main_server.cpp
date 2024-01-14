@@ -53,41 +53,34 @@ int main(int argc, char *argv[])
                         << student->className();
         }
 
-
-
         QObject::connect(clientConnection, &QTcpSocket::readyRead, [clientConnection]() {
             QByteArray incomingData = clientConnection->readAll();
-
+            QString message = QString::fromUtf8(incomingData);
             //###Needs Improvement
-            if (QString::fromUtf8(incomingData) == "Hello Server!" || "Hello from client!") {
+            if (message == "Hello Server!" || message == "Hello from client!") {
                 qDebug() << "Message received from client:" << incomingData;
             } else {
                 // Deserialize and process the student data
                 QDataStream in(&incomingData, QIODevice::ReadOnly);
                 in.setVersion(QDataStream::Qt_6_0);
-                Student *receivedStudent = new Student();
-                in >> *receivedStudent;
 
-                // Log the received student
-                qDebug() << "Received student data from GUI client:"
-                         << receivedStudent->id()
-                         << receivedStudent->firstName()
-                         << receivedStudent->middleName()
-                         << receivedStudent->lastName()
-                         << receivedStudent->roll()
-                         << receivedStudent->className();
+                while (!in.atEnd()){
+                    Student *receivedStudent = new Student();
+                    in >> *receivedStudent;
 
-                // Clean up
-                delete receivedStudent;
+                    // Log the received student
+                    qDebug() << "Received student data from GUI client:"
+                            << receivedStudent->id()
+                            << receivedStudent->firstName()
+                            << receivedStudent->middleName()
+                            << receivedStudent->lastName()
+                            << receivedStudent->roll()
+                            << receivedStudent->className();
+                    // Clean up
+                    delete receivedStudent;
+                }
             }
         });
-
-       QObject::connect(clientConnection, &QTcpSocket::disconnected, [&exampleStudents]() {
-            // Clean up the example students when the connection is closed
-            qDeleteAll(exampleStudents);
-            exampleStudents.clear();
-        });
-
         //clientConnection->disconnectFromHost();
     });
 

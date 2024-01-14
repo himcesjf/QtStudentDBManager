@@ -117,29 +117,25 @@ void StudentModel::sendDataToServer() {
 
     if (m_socket && m_socket->isOpen() && !m_students.isEmpty())
     {
+        /*
         // Test hello message to the server from GUI client upon connection
         QByteArray message = "Hello Server!";
         m_socket->write(message);
         qDebug() << "'Hello Server!' button clicked";
         qDebug() << "Message sent to server:" << message;
-
-        // Sending first student in the list
-        Student* student = m_students.first();
-
-        // Create a byte array and a data stream for serialization
-        QByteArray data;
-        QDataStream out(&data, QIODevice::WriteOnly);
+        */
+        QDataStream out(m_socket);
         out.setVersion(QDataStream::Qt_6_0);
-
-        out << *student;
-        m_socket->write(data);
-        qDebug() << "Sending student data from GUI client to server:"
-                    << student->id()
-                    << student->firstName()
-                    << student->middleName()
-                    << student->lastName()
-                    << student->roll()
-                    << student->className();
+        for (const Student* student : m_students) {
+            out << *student;
+            qDebug() << "Sending student data from GUI client to server:"
+                        << student->id()
+                        << student->firstName()
+                        << student->middleName()
+                        << student->lastName()
+                        << student->roll()
+                        << student->className();
+        }
     }
 }
 
@@ -163,6 +159,55 @@ void StudentModel::loadFromServer()
                     << student->className();
         addStudent(student);
     }
+}
+
+
+bool StudentModel::setData(const QModelIndex &index, const QVariant &value, int role) {
+    if (!index.isValid() || role != Qt::EditRole || index.row() >= m_students.size())
+        return false;
+
+    Student *student = m_students.at(index.row());
+    switch (index.column()) {
+    case 0:
+        student->setId(value.toInt());
+        break;
+    case 1:
+        student->setFirstName(value.toString());
+        break;
+    case 2:
+        student->setMiddleName(value.toString());
+        break;
+    case 3:
+        student->setLastName(value.toString());
+        break;
+    case 4:
+        student->setRoll(value.toInt());
+        break;
+    case 5:
+        student->setClassName(value.toString());
+        break;
+    default:
+        return false;
+    }
+
+    // Serialize and send updated Student data to server
+    QDataStream out(m_socket);
+    out.setVersion(QDataStream::Qt_6_0);
+    for (const Student* student : m_students){
+        out << *student;
+        qDebug() << "Sending updated student data from GUI client to server:"
+                        << student->id()
+                        << student->firstName()
+                        << student->middleName()
+                        << student->lastName()
+                        << student->roll()
+                        << student->className();
+    }
+
+    // Notify the view about data change
+    emit dataChanged(index, index);
+
+    return true;
 }
 
 void StudentModel::addStudent(Student *student)
