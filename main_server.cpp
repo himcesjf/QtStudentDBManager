@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
             out << *student;
         }
 
-        clientConnection->disconnectFromHost();
+        //clientConnection->disconnectFromHost();
     });
 
     int result = app.exec();
