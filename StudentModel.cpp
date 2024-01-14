@@ -107,6 +107,11 @@ void StudentModel::connectToServer()
             .arg(m_socket->peerPort());
     });
 
+    // Test hello message to the server from client upon connection
+    QByteArray message = "Hello from client!";
+    m_socket->write(message);
+    qDebug() << "Message sent to server:" << message;
+
     QObject::connect(m_socket, &QTcpSocket::readyRead, this, &StudentModel::loadFromServer);
 }
 
