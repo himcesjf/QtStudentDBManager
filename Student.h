@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QDataStream>
+#include <QDebug>
 
 class Student : public QObject
 {
@@ -64,4 +65,22 @@ inline QDataStream &operator<<(QDataStream &out, const Student &student) {
 inline QDataStream &operator>>(QDataStream &in, Student &student) {
     student.deserialize(in);
     return in;
+}
+
+// QDebug overload for Student pointer
+// https://doc.qt.io/qt-6/qdebug.html#writing-custom-types-to-a-stream
+inline QDebug operator<<(QDebug debug, const Student *student) {
+    QDebugStateSaver saver(debug);
+    if (student) {
+        debug.nospace() << "Student(ID: " << student->id()
+                        << ", First Name: " << student->firstName()
+                        << ", Middle Name: " << student->middleName()
+                        << ", Last Name: " << student->lastName()
+                        << ", Roll: " << student->roll()
+                        << ", Class Name: " << student->className() << ')';
+    } else {
+        debug.nospace() << "Student: nullptr";
+    }
+
+    return debug;
 }

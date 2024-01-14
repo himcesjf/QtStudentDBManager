@@ -128,13 +128,7 @@ void StudentModel::sendDataToServer() {
         out.setVersion(QDataStream::Qt_6_0);
         for (const Student* student : m_students) {
             out << *student;
-            qDebug() << "Sending student data from GUI client to server:"
-                        << student->id()
-                        << student->firstName()
-                        << student->middleName()
-                        << student->lastName()
-                        << student->roll()
-                        << student->className();
+            qDebug() << "Sending student data from GUI client to server:" << student;
         }
     }
 }
@@ -150,13 +144,7 @@ void StudentModel::loadFromServer()
      while (!in.atEnd()) {
          Student *student = new Student;
          in >> *student;
-         qDebug() << "Received student:"
-                    << student->id()
-                    << student->firstName()
-                    << student->middleName()
-                    << student->lastName()
-                    << student->roll()
-                    << student->className();
+         qDebug() << "Received student:" << student;
         addStudent(student);
     }
 }
@@ -196,13 +184,7 @@ bool StudentModel::setData(const QModelIndex &index, const QVariant &value, int 
         out.setVersion(QDataStream::Qt_6_0);
         for (const Student* student : m_students){
             out << *student;
-            qDebug() << "Sending updated student data from GUI client to server:"
-                            << student->id()
-                            << student->firstName()
-                            << student->middleName()
-                            << student->lastName()
-                            << student->roll()
-                            << student->className();
+            qDebug() << "Sending updated student data from GUI client to server:" << student;
         }
     } else {
         qDebug() << "Failed to send updated data: Socket is not valid or not open";
@@ -217,13 +199,7 @@ bool StudentModel::setData(const QModelIndex &index, const QVariant &value, int 
 void StudentModel::addStudent(Student *student)
 {
     beginInsertRows(QModelIndex(), m_students.size(), m_students.size());
-    qDebug() << "Inserting student:"
-                << student->id()
-                << student->firstName()
-                << student->middleName()
-                << student->lastName()
-                << student->roll()
-                << student->className();
+    qDebug() << "Inserting student:" << student;
     m_students.append(student);
     endInsertRows();
 }

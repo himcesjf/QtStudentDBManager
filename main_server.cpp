@@ -44,13 +44,7 @@ int main(int argc, char *argv[])
         for (const Student *student : std::as_const(exampleStudents))
         {
             out << *student;
-            qDebug() << "Sending student:"
-                        << student->id()
-                        << student->firstName()
-                        << student->middleName()
-                        << student->lastName()
-                        << student->roll()
-                        << student->className();
+            qDebug() << "Sending student:" << student;
         }
 
         QObject::connect(clientConnection, &QTcpSocket::readyRead, [clientConnection]() {
@@ -69,13 +63,7 @@ int main(int argc, char *argv[])
                     in >> *receivedStudent;
 
                     // Log the received student
-                    qDebug() << "Received student data from GUI client:"
-                            << receivedStudent->id()
-                            << receivedStudent->firstName()
-                            << receivedStudent->middleName()
-                            << receivedStudent->lastName()
-                            << receivedStudent->roll()
-                            << receivedStudent->className();
+                    qDebug() << "Received student data from GUI client:"<< receivedStudent;
                     // Clean up
                     delete receivedStudent;
                 }
