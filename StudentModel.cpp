@@ -1,8 +1,6 @@
 #include "StudentModel.h"
 #include "Settings.h"
-
 #include <QTcpSocket>
-
 #include <algorithm>
 
 StudentModel::StudentModel(QObject *parent)
@@ -115,14 +113,33 @@ void StudentModel::connectToServer()
     QObject::connect(m_socket, &QTcpSocket::readyRead, this, &StudentModel::loadFromServer);
 }
 
-
 void StudentModel::sendDataToServer() {
-// Test hello message to the server from GUI client upon connection
-    if (m_socket && m_socket->isOpen()) {
+
+    if (m_socket && m_socket->isOpen() && !m_students.isEmpty())
+    {
+        // Test hello message to the server from GUI client upon connection
         QByteArray message = "Hello Server!";
         m_socket->write(message);
         qDebug() << "'Hello Server!' button clicked";
         qDebug() << "Message sent to server:" << message;
+
+        // Sending first student in the list
+        Student* student = m_students.first();
+
+        // Create a byte array and a data stream for serialization
+        QByteArray data;
+        QDataStream out(&data, QIODevice::WriteOnly);
+        out.setVersion(QDataStream::Qt_6_0);
+
+        out << *student;
+        m_socket->write(data);
+        qDebug() << "Sending student data from GUI client to server:"
+                    << student->id()
+                    << student->firstName()
+                    << student->middleName()
+                    << student->lastName()
+                    << student->roll()
+                    << student->className();
     }
 }
 
@@ -137,7 +154,13 @@ void StudentModel::loadFromServer()
      while (!in.atEnd()) {
          Student *student = new Student;
          in >> *student;
-         qDebug() << "Received student:" << student->id() << student->firstName() << student->middleName() << student->lastName() << student->roll() << student->className();
+         qDebug() << "Received student:"
+                    << student->id()
+                    << student->firstName()
+                    << student->middleName()
+                    << student->lastName()
+                    << student->roll()
+                    << student->className();
         addStudent(student);
     }
 }
@@ -145,7 +168,13 @@ void StudentModel::loadFromServer()
 void StudentModel::addStudent(Student *student)
 {
     beginInsertRows(QModelIndex(), m_students.size(), m_students.size());
-    qDebug() << "Inserting student:" << student->id() << student->firstName() << student->middleName() << student->lastName() << student->roll() << student->className();
+    qDebug() << "Inserting student:"
+                << student->id()
+                << student->firstName()
+                << student->middleName()
+                << student->lastName()
+                << student->roll()
+                << student->className();
     m_students.append(student);
     endInsertRows();
 }

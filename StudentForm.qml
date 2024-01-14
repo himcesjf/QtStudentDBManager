@@ -38,75 +38,75 @@ GridLayout {
         }
     }
 
-    Label { Layout.row: 0; Layout.column: 0; text: "First name:" }
+    Button {
+    Layout.row: 0
+    Layout.columnSpan: 2
+    Layout.fillWidth: true
+    text: "Hello Server!"
+    onClicked: {
+        studentModel.sendDataToServer()
+        console.log("Button pressed");
+        }
+    }
+
+    Label { Layout.row: 1; Layout.column: 0; text: "First name:" }
 
     TextField {
         id: firstName
-        Layout.row: 0
+        Layout.row: 1
         Layout.column: 1
         Layout.fillWidth: true
         placeholderText: "Enter a first name ..."
     }
 
-    Label { Layout.row: 1; Layout.column: 0; text: "Middle name:" }
+    Label { Layout.row: 2; Layout.column: 0; text: "Middle name:" }
 
     TextField {
         id: middleName
-        Layout.row: 1
+        Layout.row: 2
         Layout.column: 1
         Layout.fillWidth: true
         placeholderText: "Enter a middle name ..."
     }
 
-    Label { Layout.row: 2; Layout.column: 0; text: "Last name:" }
+    Label { Layout.row: 3; Layout.column: 0; text: "Last name:" }
 
     TextField {
         id: lastName
-        Layout.row: 2
+        Layout.row: 3
         Layout.column: 1
         Layout.fillWidth: true
         placeholderText: "Enter a last name ..."
     }
 
-    Label { Layout.row: 3; Layout.column: 0; text: "Roll:" }
+    Label { Layout.row: 4; Layout.column: 0; text: "Roll:" }
 
     TextField {
         id: roll
-        Layout.row: 3
+        Layout.row: 4
         Layout.column: 1
         Layout.fillWidth: true
         placeholderText: "Enter a roll ..."
     }
 
-    Label { Layout.row: 4; Layout.column: 0; text: "Class:" }
+    Label { Layout.row: 5; Layout.column: 0; text: "Class:" }
 
     TextField {
         id: className
-        Layout.row: 4
+        Layout.row: 5
         Layout.column: 1
         Layout.fillWidth: true
         placeholderText: "Enter a class ..."
     }
 
     Button {
-        Layout.row: 5
+        Layout.row: 6
         Layout.columnSpan: 2
         Layout.fillWidth: true
         text: form.currentRow !== -1 ? "Update" : "Add"
 
         onClicked: form.sync()
     }
-
-    Button {
-    Layout.row: 6
-    Layout.columnSpan: 2
-    Layout.fillWidth: true
-    text: "Hello Server!"
-    onClicked: {
-        studentModel.sendDataToServer()
-    }
-}
-
 
     function sync() {
         if (currentRow < 0) {
