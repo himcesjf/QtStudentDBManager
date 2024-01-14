@@ -7,12 +7,21 @@
 
 StudentModel::StudentModel(QObject *parent)
     : QAbstractTableModel(parent)
+    , m_socket {nullptr}
 {
-    loadFromServer();
+    connectToServer();
 }
 
 StudentModel::~StudentModel()
 {
+     if (m_socket) {
+        m_socket->disconnectFromHost();
+        if (m_socket->state() == QAbstractSocket::UnconnectedState
+            || m_socket->waitForDisconnected(1000)) {
+            qDebug() << "Disconnected from server.";
+        }
+    }
+
     qDeleteAll(m_students);
     m_students.clear();
 }
@@ -77,37 +86,44 @@ QVariant StudentModel::headerData(int section, Qt::Orientation orientation, int 
     }
 }
 
+void StudentModel::connectToServer()
+{
+    if (m_socket) {
+        delete m_socket;
+        clearStudents();
+    }
+
+    Settings &settings = Settings::instance();
+
+    m_socket = new QTcpSocket {this};
+    m_socket->connectToHost(QHostAddress(settings.value("server/host").toString()),
+        settings.value("server/port").toUInt());
+
+    qDebug() << QString("Connecting to server %1:%2 ...").arg(settings.value("server/host").toString()).arg(settings.value("server/port").toUInt());
+
+    QObject::connect(m_socket, &QTcpSocket::connected, this, [=]() {
+        qDebug() << QString("Connected to server %1:%2.")
+            .arg(m_socket->peerAddress().toString())
+            .arg(m_socket->peerPort());
+    });
+
+    QObject::connect(m_socket, &QTcpSocket::readyRead, this, &StudentModel::loadFromServer);
+}
+
+
 void StudentModel::loadFromServer()
 {
     qDebug() << "Loading data from server ...";
 
-    Settings &settings = Settings::instance();
+    QDataStream in(m_socket);
+    in.setVersion(QDataStream::Qt_6_0);
 
-    QTcpSocket *socket = new QTcpSocket {this};
-    socket->connectToHost(QHostAddress(settings.value("server/host").toString()),
-        settings.value("server/port").toUInt());
-
-    QObject::connect(socket, &QTcpSocket::connected, this, [=]() {
-        qDebug() << QString("Connected to %1:%2.")
-            .arg(socket->peerAddress().toString())
-            .arg(socket->peerPort());
-    });
-
-    QObject::connect(socket, &QTcpSocket::readyRead, this, [=]() {
-            QDataStream in(socket);
-            in.setVersion(QDataStream::Qt_6_0);
-
-            while (!in.atEnd()) {
-                Student *student = new Student;
-                in >> *student;
-                qDebug() << "Received student:" << student->id() << student->firstName() << student->middleName() << student->lastName() << student->roll() << student->className();
-                addStudent(student);
-            }
-    });
-
-    QObject::connect(socket, &QTcpSocket::disconnected, this, [=]() {
-        socket->deleteLater();
-    });
+     while (!in.atEnd()) {
+         Student *student = new Student;
+         in >> *student;
+         qDebug() << "Received student:" << student->id() << student->firstName() << student->middleName() << student->lastName() << student->roll() << student->className();
+        addStudent(student);
+    }
 }
 
 void StudentModel::addStudent(Student *student)

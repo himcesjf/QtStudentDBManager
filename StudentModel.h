@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QAbstractTableModel>
+#include <QTcpSocket>
 #include "Student.h"
 
 class Settings;
@@ -21,8 +22,12 @@ public:
     void addStudent(Student *student);
     void clearStudents();
 
-private:
+    Q_INVOKABLE void connectToServer();
+
+private Q_SLOTS:
     void loadFromServer();
 
+private:
+    QTcpSocket *m_socket;
     QVector<Student*> m_students;
 };
