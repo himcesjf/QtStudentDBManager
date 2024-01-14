@@ -1,10 +1,10 @@
 #pragma once
 
 #include <QAbstractTableModel>
-#include <QTcpSocket>
 #include "Student.h"
 
 class Settings;
+class QTcpSocket;
 
 class StudentModel : public QAbstractTableModel
 {
