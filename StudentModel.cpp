@@ -1,11 +1,17 @@
 #include "StudentModel.h"
+#include "NetworkMessage.h"
 #include "Settings.h"
+
 #include <QTcpSocket>
+#include <QTimer>
+
 #include <algorithm>
 
 StudentModel::StudentModel(QObject *parent)
     : QAbstractTableModel(parent)
     , m_socket {nullptr}
+    , m_storageConfirmed {false}
+    , m_error {false}
 {
     connectToServer();
 }
@@ -94,112 +100,143 @@ void StudentModel::connectToServer()
     Settings &settings = Settings::instance();
 
     m_socket = new QTcpSocket {this};
-    m_socket->connectToHost(QHostAddress(settings.value("server/host").toString()),
-        settings.value("server/port").toUInt());
+    m_socket->connectToHost(QHostAddress(settings.value("client/serverHost").toString()),
+        settings.value("client/serverPort").toUInt());
 
-    qDebug() << QString("Connecting to server %1:%2 ...").arg(settings.value("server/host").toString()).arg(settings.value("server/port").toUInt());
+    qDebug() << QString("Connecting to server %1:%2 ...").arg(settings.value("client/serverHost").toString()).arg(settings.value("client/serverPort").toUInt());
 
     QObject::connect(m_socket, &QTcpSocket::connected, this, [=]() {
         qDebug() << QString("Connected to server %1:%2.")
             .arg(m_socket->peerAddress().toString())
             .arg(m_socket->peerPort());
+            
+        // Send a welcome message
+        QDataStream out(m_socket);
+        out.setVersion(QDataStream::Qt_6_0);
+        out << NetworkMessage(NetworkMessage::StatusMessage, "Hello server!");
     });
 
-    // Test hello message to the server from client upon connection
-    QByteArray message = "Hello from client!";
-    m_socket->write(message);
-    qDebug() << "Message sent to server:" << message;
 
-    QObject::connect(m_socket, &QTcpSocket::readyRead, this, &StudentModel::loadFromServer);
+    QObject::connect(m_socket, &QTcpSocket::readyRead, this, &StudentModel::readFromServer);
 }
 
-void StudentModel::sendDataToServer() {
-
-    if (m_socket && m_socket->isOpen() && !m_students.isEmpty())
-    {
-        /*
-        // Test hello message to the server from GUI client upon connection
-        QByteArray message = "Hello Server!";
-        m_socket->write(message);
-        qDebug() << "'Hello Server!' button clicked";
-        qDebug() << "Message sent to server:" << message;
-        */
-        QDataStream out(m_socket);
-        out.setVersion(QDataStream::Qt_6_0);
-        for (const Student* student : m_students) {
-            out << *student;
-            qDebug() << "Sending student data from GUI client to server:" << student;
-        }
-    }
-}
-
-
-void StudentModel::loadFromServer()
+void StudentModel::readFromServer()
 {
-    qDebug() << "Loading data from server ...";
-
     QDataStream in(m_socket);
     in.setVersion(QDataStream::Qt_6_0);
-
-     while (!in.atEnd()) {
-         Student *student = new Student;
-         in >> *student;
-         qDebug() << "Received student:" << student;
-        addStudent(student);
+    
+    while (!in.atEnd()){
+        NetworkMessage *receivedMsg = new NetworkMessage();
+        in >> *receivedMsg;
+        
+        if (receivedMsg->type() == NetworkMessage::StatusMessage) {
+            const QString &msgString = receivedMsg->payload().toString();
+            qDebug() << "Received message from server:" << receivedMsg->payload().toString();
+        } else if (receivedMsg->type() == NetworkMessage::StorageConfirmation) {
+            const int id = receivedMsg->payload().toInt();
+            
+            qDebug() << "Received storage confirmation with id:" << id;
+            
+            // Update id from server.
+            if (m_lastStudentSent) {
+                m_lastStudentSent->setId(id);
+                
+                const int row = m_students.indexOf(m_lastStudentSent);
+                
+                if (row >= 0) {
+                    emit dataChanged(index(row, 0), index(row, columnCount() - 1));
+                }
+                
+                m_lastStudentSent = nullptr;
+            }
+            
+            m_storageConfirmed = true;
+            resetError();
+            emit storageSuccess();
+        } else {
+            QDataStream studentStream(receivedMsg->payload().toByteArray());
+            studentStream.setVersion(QDataStream::Qt_6_0);
+            Student *student = new Student;
+            studentStream >> *student;
+            qDebug() << "Received student from server:" << student;
+            insertStudent(student);
+        }
+        
+        delete receivedMsg;
     }
 }
 
-
-bool StudentModel::setData(const QModelIndex &index, const QVariant &value, int role) {
-    if (!index.isValid() || role != Qt::EditRole || index.row() >= m_students.size())
-        return false;
-
-    Student *student = m_students.at(index.row());
-    switch (index.column()) {
-    case 0:
-        student->setId(value.toInt());
-        break;
-    case 1:
-        student->setFirstName(value.toString());
-        break;
-    case 2:
-        student->setMiddleName(value.toString());
-        break;
-    case 3:
-        student->setLastName(value.toString());
-        break;
-    case 4:
-        student->setRoll(value.toInt());
-        break;
-    case 5:
-        student->setClassName(value.toString());
-        break;
-    default:
-        return false;
+void StudentModel::checkStorageConfirmed()
+{
+    if (!m_storageConfirmed) {
+        m_error = true;
+        m_errorString = QStringLiteral("Failed to save, please contact administrator");
+        emit errorChanged();
+        emit errorStringChanged();
     }
+}
 
-    if (m_socket && m_socket->isOpen()){
-        // Serialize and send updated Student data to server
+void StudentModel::sendToServer(Student *student)
+{
+    resetError();
+    
+    if (student && m_socket && m_socket->state() == QAbstractSocket::ConnectedState) {
+        m_storageConfirmed = false;
+        
         QDataStream out(m_socket);
         out.setVersion(QDataStream::Qt_6_0);
-        for (const Student* student : m_students){
-            out << *student;
-            qDebug() << "Sending updated student data from GUI client to server:" << student;
-        }
+        
+        QByteArray serializedStudent;
+        QDataStream studentStream(&serializedStudent, QIODeviceBase::WriteOnly);
+        studentStream.setVersion(QDataStream::Qt_6_0);
+        studentStream << *student;
+    
+        qDebug() << "Sending student to server:" << student;
+        out << NetworkMessage(NetworkMessage::StudentObject, serializedStudent);
+        
+        m_lastStudentSent = student;
+        
+        QTimer::singleShot(200, this, &StudentModel::checkStorageConfirmed);
     } else {
-        qDebug() << "Failed to send updated data: Socket is not valid or not open";
+        qDebug() << "Unable to send to server.";
+        m_error = true;
+        m_errorString = QStringLiteral("Failed to save, please contact administrator");
+        emit errorChanged();
+        emit errorStringChanged();
     }
-
-    // Notify the view about data change
-    emit dataChanged(index, index);
-
-    return true;
 }
 
-void StudentModel::addStudent(Student *student)
+void StudentModel::updateStudent(int id, const QString &firstName,
+        const QString &middleName, const QString &lastName, int roll, const QString &className)
+{
+    if (id == -1) {
+        Student *newStudent = new Student(nullptr, id, firstName, middleName, lastName, roll, className);
+        insertStudent(newStudent);
+        sendToServer(newStudent);
+    } else {
+        for (int i = 0; i < m_students.length(); ++i) {
+            Student *existingStudent = m_students.at(i);
+            
+            if (existingStudent->id() == id) {
+                existingStudent->setFirstName(firstName);
+                existingStudent->setMiddleName(middleName);
+                existingStudent->setLastName(lastName);
+                existingStudent->setRoll(roll);
+                existingStudent->setClassName(className);
+                
+                emit dataChanged(index(i, 0), index(i, columnCount() - 1));
+                
+                sendToServer(existingStudent);
+                
+                break;
+            }
+        }
+    }
+}
+
+void StudentModel::insertStudent(Student *student)
 {
     beginInsertRows(QModelIndex(), m_students.size(), m_students.size());
-    qDebug() << "Inserting student:" << student;
     m_students.append(student);
     endInsertRows();
 }
@@ -210,4 +247,24 @@ void StudentModel::clearStudents()
     qDeleteAll(m_students);
     m_students.clear();
     endRemoveRows();
+}
+
+bool StudentModel::error() const
+{
+    return m_error;
+}
+
+QString StudentModel::errorString() const
+{
+    return m_errorString; 
+}
+
+void StudentModel::resetError()
+{
+    if (m_error) {
+        m_error = false;
+        m_errorString.clear();
+        emit errorChanged();
+        emit errorStringChanged();
+    }
 }

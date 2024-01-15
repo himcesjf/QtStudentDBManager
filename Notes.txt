@@ -1,0 +1,14 @@
+Notes:
+##PostgreSQL
+
+This is user::password - myuser::myuser
+Database name - mydb
+
+Make sure in your postgresql.conf you enable the listen address and port
+sudo nano /var/lib/pgsql/data/postgresql.conf
+
+And, in your pg_hga.conf make sure all the lines that say "ident" are changed to "md5"
+sudo nano /var/lib/pgsql/data/pg_hba.conf
+
+Then restart it
+sudo systemctl reload postgresql

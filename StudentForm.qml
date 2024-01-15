@@ -11,17 +11,26 @@ GridLayout {
 
     QtObject {
         id: privateData
-        property bool syncToCurrentRow: true
+        property int currentId: -1
+    }
+    
+    Connections {
+        target: model
+        
+        function onStorageSuccess() {
+            sync();
+            successMsg.visible = true;
+        }
     }
 
     onCurrentRowChanged: {
-        if (!privateData.syncToCurrentRow) {
-            return;
-        }
-
+        successMsg.visible = false;
+        sync();
+    }
+    
+    function sync() {        
         if (currentRow > -1) {
-            console.log("Syncing form to row:", currentRow);
-
+            privateData.currentId = model.data(model.index(currentRow, 0));
             firstName.text = model.data(model.index(currentRow, 1));
             lastName.text = model.data(model.index(currentRow, 2));
             middleName.text = model.data(model.index(currentRow, 3));
@@ -30,6 +39,7 @@ GridLayout {
         } else {
             console.log("Clearing form.")
 
+            privateData.currentId = -1;
             firstName.text = "";
             lastName.text = "";
             middleName.text = "";
@@ -38,90 +48,86 @@ GridLayout {
         }
     }
 
-    Button {
-    Layout.row: 0
-    Layout.columnSpan: 2
-    Layout.fillWidth: true
-    text: "Hello Server!"
-    onClicked: {
-        studentModel.sendDataToServer()
-        console.log("Button pressed");
-        }
-    }
-
-    Label { Layout.row: 1; Layout.column: 0; text: "First name:" }
+    Label { Layout.row: 0; Layout.column: 0; text: "First name:" }
 
     TextField {
         id: firstName
-        Layout.row: 1
+        Layout.row: 0
         Layout.column: 1
         Layout.fillWidth: true
         placeholderText: "Enter a first name ..."
     }
 
-    Label { Layout.row: 2; Layout.column: 0; text: "Middle name:" }
+    Label { Layout.row: 1; Layout.column: 0; text: "Middle name:" }
 
     TextField {
         id: middleName
-        Layout.row: 2
+        Layout.row: 1
         Layout.column: 1
         Layout.fillWidth: true
         placeholderText: "Enter a middle name ..."
     }
 
-    Label { Layout.row: 3; Layout.column: 0; text: "Last name:" }
+    Label { Layout.row: 2; Layout.column: 0; text: "Last name:" }
 
     TextField {
         id: lastName
-        Layout.row: 3
+        Layout.row: 2
         Layout.column: 1
         Layout.fillWidth: true
         placeholderText: "Enter a last name ..."
     }
 
-    Label { Layout.row: 4; Layout.column: 0; text: "Roll:" }
+    Label { Layout.row: 3; Layout.column: 0; text: "Roll:" }
 
     TextField {
         id: roll
-        Layout.row: 4
+        Layout.row: 3
         Layout.column: 1
         Layout.fillWidth: true
         placeholderText: "Enter a roll ..."
     }
 
-    Label { Layout.row: 5; Layout.column: 0; text: "Class:" }
+    Label { Layout.row: 4; Layout.column: 0; text: "Class:" }
 
     TextField {
         id: className
-        Layout.row: 5
+        Layout.row: 4
         Layout.column: 1
         Layout.fillWidth: true
         placeholderText: "Enter a class ..."
     }
 
     Button {
-        Layout.row: 6
+        Layout.row: 5
         Layout.columnSpan: 2
         Layout.fillWidth: true
         text: form.currentRow !== -1 ? "Update" : "Add"
 
-        onClicked: form.sync()
-    }
-
-    function sync() {
-        if (currentRow < 0) {
-            privateData.syncToCurrentRow = false;
-            model.insertRows(model.rowCount(), 1);
+        onClicked: {
+            successMsg.visible = false;
+            model.updateStudent(privateData.currentId, firstName.text,
+                lastName.text, middleName.text, roll.text, className.text);
         }
-
-        model.setData(model.index(currentRow, 1), firstName.text);
-        model.setData(model.index(currentRow, 2), lastName.text);
-        model.setData(model.index(currentRow, 3), middleName.text);
-        model.setData(model.index(currentRow, 4), roll.text);
-        model.setData(model.index(currentRow, 5), className.text);
-
-        model.submit();
-
-        privateData.syncToCurrentRow = true;
+    }
+    
+    Text {
+        id: successMsg
+        Layout.row: 6
+        Layout.fillWidth: true
+        visible: false
+        text: "Successfully saved"
+        color: "green"
+        wrapMode: Text.Wrap
+    }
+    
+    Text {
+        id: errorMsg
+        Layout.row: 7
+        Layout.fillWidth: true
+        visible: model.error
+        text: model.errorString
+        color: "red"
+        wrapMode: Text.Wrap
     }
 }

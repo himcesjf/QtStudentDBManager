@@ -33,5 +33,32 @@ private:
         if (!contains("server/port")) {
             setValue("server/port", 12345);
         }
+        
+        if (!contains("server/dbHost")) {
+            setValue("server/dbHost", "127.0.0.1");
+        }
+        
+        if (!contains("server/dbPort")) {
+            setValue("server/dbPort", 5432);
+        }
+        
+        if (!contains("server/dbUser")) {
+            setValue("server/dbUser", "myuser");
+        }
+        
+        if (!contains("server/dbPassword")) {
+            setValue("server/dbPassword", "myuser");
+        }
+        
+        if (!contains("server/dbName")) {
+            setValue("server/dbName", "mydb");
+        }
+        
+        if (!contains("client/serverHost")) {
+            setValue("client/serverHost", "127.0.0.1");
+        }
+        if (!contains("client/serverPort")) {
+            setValue("client/serverPort", 12345);
+        }
     }
 };

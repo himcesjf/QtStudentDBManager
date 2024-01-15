@@ -1,7 +1,9 @@
 #pragma once
 
-#include <QAbstractTableModel>
 #include "Student.h"
+
+#include <QAbstractTableModel>
+#include <QPointer>
 
 class Settings;
 class QTcpSocket;
@@ -9,6 +11,9 @@ class QTcpSocket;
 class StudentModel : public QAbstractTableModel
 {
     Q_OBJECT
+    
+    Q_PROPERTY(bool error READ error NOTIFY errorChanged)
+    Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
 
 public:
     explicit StudentModel(QObject *parent = nullptr);
@@ -18,20 +23,39 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 
-    void addStudent(Student *student);
-    void clearStudents();
-
+    Q_INVOKABLE void updateStudent(int id, const QString &firstName,
+        const QString &middleName, const QString &lastName, int roll, const QString &className);
+    
     Q_INVOKABLE void connectToServer();
+    
+    bool error() const;
+    QString errorString() const;
+    Q_INVOKABLE void resetError();
 
-public slots:
-    Q_INVOKABLE void sendDataToServer();
+    
+Q_SIGNALS:
+    void storageSuccess() const;
+    void errorChanged() const;
+    void errorStringChanged() const;
 
 private Q_SLOTS:
-    void loadFromServer();
+    void readFromServer();
+    
+    void sendToServer(Student *student);
+    void checkStorageConfirmed();
 
 private:
-    QTcpSocket *m_socket;
+    void insertStudent(Student *student);
+    void clearStudents();
+    
     QVector<Student*> m_students;
+    
+    QTcpSocket *m_socket;
+    
+    QPointer<Student> m_lastStudentSent;
+    bool m_storageConfirmed;
+    
+    bool m_error;
+    QString m_errorString;
 };

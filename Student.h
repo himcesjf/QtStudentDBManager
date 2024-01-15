@@ -7,6 +7,7 @@
 class Student : public QObject
 {
     Q_OBJECT
+    
     Q_PROPERTY(int id READ id WRITE setId)
     Q_PROPERTY(QString firstName READ firstName WRITE setFirstName)
     Q_PROPERTY(QString middleName READ middleName WRITE setMiddleName)
@@ -15,16 +16,14 @@ class Student : public QObject
     Q_PROPERTY(QString className READ className WRITE setClassName)
 
 public:
-    explicit Student(
-                     QObject *parent = nullptr,
-                     int id = 0,
-                     const QString &firstName = QString(),
-                     const QString &middleName = QString(),
-                     const QString &lastName = QString(),
-                     int roll = 0,
-                     const QString &className = QString()
-                     );
-
+    explicit Student(QObject *parent = nullptr,
+        int id = -1,
+        const QString &firstName = QString(),
+        const QString &middleName = QString(),
+        const QString &lastName = QString(),
+        int roll = 0,
+        const QString &className = QString());
+    ~Student();
 
     int id() const;
     void setId(int id);
@@ -57,27 +56,31 @@ private:
     int m_id;
 };
 
-inline QDataStream &operator<<(QDataStream &out, const Student &student) {
+
+inline QDataStream &operator<<(QDataStream &out, const Student &student)
+{
     student.serialize(out);
     return out;
 }
 
-inline QDataStream &operator>>(QDataStream &in, Student &student) {
+inline QDataStream &operator>>(QDataStream &in, Student &student)
+{
     student.deserialize(in);
     return in;
 }
 
-// QDebug overload for Student pointer
-// https://doc.qt.io/qt-6/qdebug.html#writing-custom-types-to-a-stream
-inline QDebug operator<<(QDebug debug, const Student *student) {
+
+inline QDebug operator<<(QDebug debug, const Student *student)
+{
     QDebugStateSaver saver(debug);
+    
     if (student) {
         debug.nospace() << "Student(ID: " << student->id()
-                        << ", First Name: " << student->firstName()
-                        << ", Middle Name: " << student->middleName()
-                        << ", Last Name: " << student->lastName()
-                        << ", Roll: " << student->roll()
-                        << ", Class Name: " << student->className() << ')';
+            << ", First Name: " << student->firstName()
+            << ", Middle Name: " << student->middleName()
+            << ", Last Name: " << student->lastName()
+            << ", Roll: " << student->roll()
+            << ", Class Name: " << student->className() << ')';
     } else {
         debug.nospace() << "Student: nullptr";
     }
