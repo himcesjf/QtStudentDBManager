@@ -6,10 +6,12 @@
 
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QSqlDatabase> //For SQLite database
 
 StudentDatabase::StudentDatabase(QObject *parent)
     : QObject(parent)
 {
+    /* Remvoving PostgreSQL connection for debugging
     m_db = QSqlDatabase::addDatabase(QStringLiteral("QPSQL"), QStringLiteral("studentDatabase"));
  
     Settings &settings = Settings::instance();
@@ -25,6 +27,11 @@ StudentDatabase::StudentDatabase(QObject *parent)
     m_db.setUserName(settings.value("server/dbUser").toString());
     m_db.setPassword(settings.value("server/dbPassword").toString()); 
     m_db.setDatabaseName(settings.value("server/dbName").toString());
+    */
+
+    //Connect to SQLite database
+    QSqlDatabase m_db = QSqlDatabase::addDatabase("QSQLITE");
+    m_db.setDatabaseName("students.db");
 
     if (m_db.open()) {
         qDebug() << "Database connection open.";
@@ -81,15 +88,18 @@ void StudentDatabase::enterStudent(Student *student)
     if (student->id() == -1) {
         qDebug() << "New student for database:" << student;
                 
+        //query.prepare("INSERT INTO students (firstName, middleName, lastName, roll, class) "
+        //    "VALUES (:firstName, :middleName, :lastName, :roll, :class)");
+
         query.prepare("INSERT INTO students (firstName, middleName, lastName, roll, class) "
-            "VALUES (:firstName, :middleName, :lastName, :roll, :class)");
+                      "VALUES (?, ?, ?, ?, ?)");
         
         query.bindValue(":firstName", student->firstName());
         query.bindValue(":middleName", student->middleName());
         query.bindValue(":lastName", student->lastName());
         query.bindValue(":roll", student->roll());
         query.bindValue(":class", student->className());
-    
+
         const bool success = query.exec();
 
         if (success) {
@@ -97,7 +107,8 @@ void StudentDatabase::enterStudent(Student *student)
             qDebug() << "Newly inserted id:" << id;
             emit newStudentAdded(id);
         } else {
-            qDebug() << "Insert failed:" << query.lastError().text();
+            qCritical() << "Insert failed:" << query.lastError().text();
+            qCritical() << "Failed Query:" << query.lastQuery();
         }
     } else {
         qDebug() << "Updating database record for:" << student;
@@ -128,7 +139,8 @@ void StudentDatabase::createTable()
     QSqlQuery query(m_db);
     
     query.exec("CREATE TABLE IF NOT EXISTS students ("
-        "id SERIAL PRIMARY KEY, "
+//        "id SERIAL PRIMARY KEY, " //For PostgreSQL
+        "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
         "firstName TEXT, "
         "middleName TEXT, "
         "lastName TEXT, "
