@@ -11,7 +11,10 @@
 StudentDatabase::StudentDatabase(QObject *parent)
     : QObject(parent)
 {
-    /* Remvoving PostgreSQL connection for debugging
+    /* Replacing PostgreSQL with SQLite for debugging
+     * Replace all bindValue with addBindValue for SQLite https://doc.qt.io/qt-6/qsqlquery.html
+     * Don't use SERIAL in createTable for SQLite
+    */
     m_db = QSqlDatabase::addDatabase(QStringLiteral("QPSQL"), QStringLiteral("studentDatabase"));
  
     Settings &settings = Settings::instance();
@@ -27,11 +30,12 @@ StudentDatabase::StudentDatabase(QObject *parent)
     m_db.setUserName(settings.value("server/dbUser").toString());
     m_db.setPassword(settings.value("server/dbPassword").toString()); 
     m_db.setDatabaseName(settings.value("server/dbName").toString());
-    */
 
+    /*
     //Connect to SQLite database
     QSqlDatabase m_db = QSqlDatabase::addDatabase("QSQLITE");
     m_db.setDatabaseName("students.db");
+    */
 
     if (m_db.open()) {
         qDebug() << "Database connection open.";
@@ -87,12 +91,9 @@ void StudentDatabase::enterStudent(Student *student)
     
     if (student->id() == -1) {
         qDebug() << "New student for database:" << student;
-                
-        //query.prepare("INSERT INTO students (firstName, middleName, lastName, roll, class) "
-        //    "VALUES (:firstName, :middleName, :lastName, :roll, :class)");
 
         query.prepare("INSERT INTO students (firstName, middleName, lastName, roll, class) "
-                      "VALUES (?, ?, ?, ?, ?)");
+            "VALUES (:firstName, :middleName, :lastName, :roll, :class)");
         
         query.bindValue(":firstName", student->firstName());
         query.bindValue(":middleName", student->middleName());
@@ -100,6 +101,16 @@ void StudentDatabase::enterStudent(Student *student)
         query.bindValue(":roll", student->roll());
         query.bindValue(":class", student->className());
 
+        /*
+        query.prepare("INSERT INTO students (firstName, middleName, lastName, roll, class) "
+              "VALUES (?, ?, ?, ?, ?)");
+
+        query.addBindValue(student->firstName());
+        query.addBindValue(student->middleName());
+        query.addBindValue(student->lastName());
+        query.addBindValue(student->roll());
+        query.addBindValue(student->className());
+        */
         const bool success = query.exec();
 
         if (success) {
@@ -139,8 +150,8 @@ void StudentDatabase::createTable()
     QSqlQuery query(m_db);
     
     query.exec("CREATE TABLE IF NOT EXISTS students ("
-//        "id SERIAL PRIMARY KEY, " //For PostgreSQL
-        "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+        "id SERIAL PRIMARY KEY, " //For PostgreSQL
+//        "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," //For SQlite
         "firstName TEXT, "
         "middleName TEXT, "
         "lastName TEXT, "

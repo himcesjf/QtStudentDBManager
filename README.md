@@ -47,6 +47,23 @@ The application consists of two main components:
 - Displays "Successfully saved" upon receiving an "OK" response from the server.
 - If there's an error or a problem in connecting with the server, it shows: "Failed to save, please contact administrator".
 
+## PostgreSQL
+- This is user::password - myuser::myuser
+- Database name - studentsdb
+
+- Make sure in your postgresql.conf you enable the listen address and port
+$ sudo nano /var/lib/pgsql/data/postgresql.conf
+
+- And, in your pg_hga.conf make sure all the lines that say "ident" are changed to "md5"
+$ sudo nano /var/lib/pgsql/data/pg_hba.conf
+
+- Most imporantantly, make sure that the studentsdb is created under myuser sa the table owner else it will return 42501 privileges error code. Solutions to 42601 also lies in privileges.
+$ createdb studentsdb -O myuser
+
+- Then restart it:
+$ sudo systemctl reload postgresql
+
+
 ## Data Flow and Processing
 ### From Database to GUI
 1. **Database to Server**: The server retrieves and serializes Student records from the database.
