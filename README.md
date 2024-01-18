@@ -57,7 +57,7 @@ The application consists of two main components:
 - And, in your pg_hga.conf make sure all the lines that say "ident" are changed to "md5"
 `$ sudo nano /var/lib/pgsql/data/pg_hba.conf`
 
-- Most imporantantly, make sure that the studentsdb is created under myuser sa the table owner else it will return 42501 privileges error code. Solutions to 42601 also lies in privileges.
+- Most imporantantly, make sure that the studentsdb is created under myuser as the table owner else it will return 42501 privileges error code. Solutions to 42601 also lies in privileges.
 `$ createdb studentsdb -O myuser`
 
 - Then restart it:
