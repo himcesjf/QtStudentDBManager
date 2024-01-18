@@ -74,3 +74,11 @@ void Student::serialize(QDataStream &out) const {
 void Student::deserialize(QDataStream &in) {
     in >> m_id >> m_firstName >> m_lastName >> m_middleName >> m_roll >> m_className;
 }
+
+void Student::setSchoolName(const QString &name) {
+    schoolName = name;
+}
+
+void Student::incrementVersion() {
+    versionNumber++;
+}
