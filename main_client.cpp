@@ -12,6 +12,8 @@
 int main(int argc, char *argv[])
 {
     QGuiApplication app {argc, argv};
+    QString schoolName = argc > 1 ? argv[1] : "DefaultSchool"; //Modifying the Client to Start with a School Name
+
     QQmlApplicationEngine engine {&app};
 
     qmlRegisterType<StudentModel>("com.student.manager", 1, 0, "StudentModel");
