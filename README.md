@@ -52,16 +52,16 @@ The application consists of two main components:
 - Database name - studentsdb
 
 - Make sure in your postgresql.conf you enable the listen address and port
-$ sudo nano /var/lib/pgsql/data/postgresql.conf
+`$ sudo nano /var/lib/pgsql/data/postgresql.conf`
 
 - And, in your pg_hga.conf make sure all the lines that say "ident" are changed to "md5"
-$ sudo nano /var/lib/pgsql/data/pg_hba.conf
+`$ sudo nano /var/lib/pgsql/data/pg_hba.conf`
 
 - Most imporantantly, make sure that the studentsdb is created under myuser sa the table owner else it will return 42501 privileges error code. Solutions to 42601 also lies in privileges.
-$ createdb studentsdb -O myuser
+`$ createdb studentsdb -O myuser`
 
 - Then restart it:
-$ sudo systemctl reload postgresql
+`$ sudo systemctl reload postgresql`
 
 
 ## Data Flow and Processing
