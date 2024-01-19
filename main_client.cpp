@@ -33,6 +33,9 @@ int main(int argc, char *argv[])
     parser.addOption(schoolOption);
     parser.process(app);
 
+    QString cliSchoolName = parser.value(schoolOption);
+
+
     if (!parser.isSet(schoolOption)) {
         qCritical() << "Error: School name must be provided. Use --school <name>.";
         parser.showHelp(1); //https://doc.qt.io/qt-6/qcommandlineparser.html#showHelp
