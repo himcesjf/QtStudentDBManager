@@ -69,7 +69,7 @@ void StudentDatabase::allStudentsRequested() const
             query.value("firstName").toString(),
             query.value("middleName").toString(),
             query.value("lastName").toString(),
-            query.value("rollName").toInt(),
+            query.value("roll").toInt(),
             query.value("class").toString(),
             query.value("school").toString());
         students.append(student);
@@ -123,6 +123,7 @@ void StudentDatabase::enterStudent(Student *student)
         query.bindValue(":roll", student->roll());
         query.bindValue(":class", student->className());
         query.bindValue(":school", student->schoolName());
+        query.bindValue(":id", student->id());
             
         query.exec();
         

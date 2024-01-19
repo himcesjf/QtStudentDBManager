@@ -31,7 +31,7 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
     Q_INVOKABLE void updateStudent(int id, const QString &firstName,
-        const QString &middleName, const QString &lastName, int roll, const QString &className, const QString &schoolName);
+        const QString &middleName, const QString &lastName, int roll, const QString &className/*, const QString &schoolName*/);
     
     Q_INVOKABLE void connectToServer();
     

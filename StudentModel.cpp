@@ -47,7 +47,7 @@ int StudentModel::rowCount(const QModelIndex & /*parent*/) const
 
 int StudentModel::columnCount(const QModelIndex & /*parent*/) const
 {
-    return 7; // ID, First Name, Middle Name, Last Name, Roll, Class Name, School
+    return 6; // ID, First Name, Middle Name, Last Name, Roll, Class Name
 }
 
 QVariant StudentModel::data(const QModelIndex &index, int role) const
@@ -72,8 +72,8 @@ QVariant StudentModel::data(const QModelIndex &index, int role) const
         return student->roll();
     case 5:
         return student->className();
-    case 6:
-        return student->schoolName();
+//    case 6:
+//        return student->schoolName();
     default:
         return QVariant();
     }
@@ -97,8 +97,8 @@ QVariant StudentModel::headerData(int section, Qt::Orientation orientation, int 
             return "Roll";
         case 5:
             return "Class";
-        case 6:
-            return "School";
+//        case 6:
+//            return "School";
         default:
             return QVariant();
     }
@@ -221,7 +221,7 @@ void StudentModel::sendToServer(Student *student)
 }
 
 void StudentModel::updateStudent(int id, const QString &firstName,
-        const QString &middleName, const QString &lastName, int roll, const QString &className, const QString &schoolName)
+        const QString &middleName, const QString &lastName, int roll, const QString &className/*, const QString &schoolName*/)
 {
     if (id == -1) {
         Student *newStudent = new Student(nullptr, id, firstName, middleName, lastName, roll, className);
@@ -237,7 +237,7 @@ void StudentModel::updateStudent(int id, const QString &firstName,
                 existingStudent->setLastName(lastName);
                 existingStudent->setRoll(roll);
                 existingStudent->setClassName(className);
-                existingStudent->setSchoolName(schoolName);
+//                existingStudent->setSchoolName(schoolName);
                 
                 emit dataChanged(index(i, 0), index(i, columnCount() - 1));
                 
