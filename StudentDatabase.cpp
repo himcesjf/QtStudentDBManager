@@ -133,8 +133,7 @@ void StudentDatabase::createTable()
     }
  
     QSqlQuery query(m_db);
-    
-    query.exec("CREATE TABLE IF NOT EXISTS students ("
+    if(!query.exec("CREATE TABLE IF NOT EXISTS students ("
         "id SERIAL PRIMARY KEY, " //For PostgreSQL
 //        "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," //For SQlite
         "firstName TEXT, "
@@ -142,5 +141,7 @@ void StudentDatabase::createTable()
         "lastName TEXT, "
         "roll INTEGER, "
         "class TEXT, "
-        "school TEXT)");
+        "school TEXT)")) {qCritical() << "Error creating table: " << query.lastError().text(); return;}
+
+        qDebug() <<"Table 'students' created or already exists on server side.";
 }
