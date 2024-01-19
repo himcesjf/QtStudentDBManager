@@ -51,7 +51,7 @@ private:
         }
         
         if (!contains("server/dbName")) {
-            setValue("server/dbName", "mydb");
+            setValue("server/dbName", "studentsdb");
         }
         
         if (!contains("client/serverHost")) {
