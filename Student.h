@@ -14,6 +14,7 @@ class Student : public QObject
     Q_PROPERTY(QString lastName READ lastName WRITE setLastName)
     Q_PROPERTY(int roll READ roll WRITE setRoll)
     Q_PROPERTY(QString className READ className WRITE setClassName)
+    Q_PROPERTY(QString schoolName READ schoolName WRITE setSchoolName)
 
 public:
     explicit Student(QObject *parent = nullptr,
@@ -22,7 +23,8 @@ public:
         const QString &middleName = QString(),
         const QString &lastName = QString(),
         int roll = 0,
-        const QString &className = QString());
+        const QString &className = QString(),
+        const QString &schoolName = QString());
     ~Student();
 
     int id() const;
@@ -43,12 +45,13 @@ public:
     QString className() const;
     void setClassName(const QString &className);
 
+    QString schoolName() const;
+    void setSchoolName(const QString &schoolName);
+
     // Serialization
     void serialize(QDataStream &out) const;
     void deserialize(QDataStream &in);
 
-    //School
-    void setSchoolName(const QString &name);
     void incrementVersion();
 
 private:
@@ -57,9 +60,9 @@ private:
     QString m_lastName;
     int m_roll;
     QString m_className;
+    QString m_schoolName;
     int m_id;
 
-    QString schoolName;
     int versionNumber;
 };
 
@@ -87,7 +90,8 @@ inline QDebug operator<<(QDebug debug, const Student *student)
             << ", Middle Name: " << student->middleName()
             << ", Last Name: " << student->lastName()
             << ", Roll: " << student->roll()
-            << ", Class Name: " << student->className() << ')';
+            << ", Class Name: " << student->className()
+            << ", School Name: " << student->schoolName() << ')';
     } else {
         debug.nospace() << "Student: nullptr";
     }

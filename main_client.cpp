@@ -57,7 +57,8 @@ int main(int argc, char *argv[])
         "middleName TEXT, "
         "lastName TEXT, "
         "roll INTEGER, "
-        "class TEXT)");
+        "class TEXT, "
+        "school TEXT)");
 
     if (!query.exec()) {
         qDebug() << "Error: Failed to create the 'students' table on client-side. Error message: " << query.lastError().text();

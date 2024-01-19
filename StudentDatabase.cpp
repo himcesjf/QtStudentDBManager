@@ -6,7 +6,7 @@
 
 #include <QSqlQuery>
 #include <QSqlError>
-#include <QSqlDatabase> //For SQLite database
+#include <QSqlDatabase>
 
 StudentDatabase::StudentDatabase(QObject *parent)
     : QObject(parent)
@@ -64,7 +64,8 @@ void StudentDatabase::allStudentsRequested() const
             query.value("middleName").toString(),
             query.value("lastName").toString(),
             query.value("rollName").toInt(),
-            query.value("class").toString());
+            query.value("class").toString(),
+            query.value("school").toString());
         students.append(student);
     } while (query.next());
     
@@ -85,13 +86,14 @@ void StudentDatabase::enterStudent(Student *student)
         qDebug() << "New student for database:" << student;
 
         query.prepare("INSERT INTO students (firstName, middleName, lastName, roll, class) "
-            "VALUES (:firstName, :middleName, :lastName, :roll, :class)");
+            "VALUES (:firstName, :middleName, :lastName, :roll, :class, :school)");
         
         query.bindValue(":firstName", student->firstName());
         query.bindValue(":middleName", student->middleName());
         query.bindValue(":lastName", student->lastName());
         query.bindValue(":roll", student->roll());
         query.bindValue(":class", student->className());
+        query.bindValue(":school", student->schoolName());
 
         const bool success = query.exec();
 
@@ -107,13 +109,14 @@ void StudentDatabase::enterStudent(Student *student)
         qDebug() << "Updating database record for:" << student;
 
         query.prepare("UPDATE students SET firstName = :firstName, middleName = :middleName, "
-            "lastName = :lastName, roll = :roll, class = :class WHERE id = :id");
+            "lastName = :lastName, roll = :roll, class = :class, school = :school WHERE id = :id");
 
         query.bindValue(":firstName", student->firstName());
         query.bindValue(":middleName", student->middleName());
         query.bindValue(":lastName", student->lastName());
         query.bindValue(":roll", student->roll());
         query.bindValue(":class", student->className());
+        query.bindValue(":school", student->schoolName());
             
         query.exec();
         
@@ -138,5 +141,6 @@ void StudentDatabase::createTable()
         "middleName TEXT, "
         "lastName TEXT, "
         "roll INTEGER, "
-        "class TEXT)");
+        "class TEXT, "
+        "school TEXT)");
 }

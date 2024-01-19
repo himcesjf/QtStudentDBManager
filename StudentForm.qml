@@ -36,6 +36,7 @@ GridLayout {
             middleName.text = model.data(model.index(currentRow, 3));
             roll.text = model.data(model.index(currentRow, 4));
             className.text = model.data(model.index(currentRow, 5));
+            schoolName.text = model.data(model.index(currentRow, 6));
         } else {
             console.log("Clearing form.")
 
@@ -45,6 +46,7 @@ GridLayout {
             middleName.text = "";
             roll.text = "";
             className.text = "";
+            schoolName.text = "";
         }
     }
 
@@ -98,8 +100,18 @@ GridLayout {
         placeholderText: "Enter a class ..."
     }
 
-    Button {
+    Label { Layout.row: 5; Layout.column: 0; text: "School:" }
+
+    TextField {
+        id: schoolName
         Layout.row: 5
+        Layout.column: 1
+        Layout.fillWidth: true
+        placeholderText: "Enter school ..."
+    }
+
+    Button {
+        Layout.row: 6
         Layout.columnSpan: 2
         Layout.fillWidth: true
         text: form.currentRow !== -1 ? "Update" : "Add"
@@ -107,13 +119,13 @@ GridLayout {
         onClicked: {
             successMsg.visible = false;
             model.updateStudent(privateData.currentId, firstName.text,
-                lastName.text, middleName.text, roll.text, className.text);
+                lastName.text, middleName.text, roll.text, className.text, schoolName.text);
         }
     }
     
     Text {
         id: successMsg
-        Layout.row: 6
+        Layout.row: 7
         Layout.fillWidth: true
         visible: false
         text: "Successfully saved"
@@ -123,7 +135,7 @@ GridLayout {
     
     Text {
         id: errorMsg
-        Layout.row: 7
+        Layout.row: 8
         Layout.fillWidth: true
         visible: model.error
         text: model.errorString
