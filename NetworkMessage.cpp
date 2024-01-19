@@ -1,3 +1,9 @@
+/*
+ * Implementation of the NetworkMessage class.
+ * This class handles the format and serialization of messages exchanged between the client and server.
+ */
+
+
 #include "NetworkMessage.h"
 #include "Student.h"
 

@@ -1,3 +1,9 @@
+/*
+ * Implementation of the StudentDatabase class.
+ * Handles all database operations on the server side, including querying and updating student records.
+ */
+
+
 #include "StudentDatabase.h"
 #include "Settings.h"
 #include "Student.h"

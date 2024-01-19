@@ -1,3 +1,9 @@
+/*
+ * Main QML file for the QtStudentDBManager client GUI.
+ * It defines the layout and components of the main window, including the student table view and data entry forms.
+ */
+
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts

@@ -1,3 +1,9 @@
+/*
+ * Header file for the StudentServer class.
+ * Declares the server-side functionalities for handling client connections and data requests.
+ */
+
+
 #pragma once
 
 #include <QObject>

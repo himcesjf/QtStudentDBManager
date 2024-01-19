@@ -1,3 +1,9 @@
+/*
+ * Implementation of the Student class.
+ * Manages the data and behavior of student entities, including serialization for network transmission.
+ */
+
+
 #include "Student.h"
 
 Student::Student(QObject *parent, int id, const QString &firstName, const QString &middleName, 

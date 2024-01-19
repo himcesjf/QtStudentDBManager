@@ -1,3 +1,9 @@
+/*
+ * Header file for the StudentModel class.
+ * Declares the structure and functionalities of the model used in the client's GUI for representing student data.
+ */
+
+
 #pragma once
 
 #include "Student.h"

@@ -1,3 +1,9 @@
+/*
+ * Header file for the StudentDatabase class.
+ * Declares functionalities for interacting with the server-side database to manage student data.
+ */
+
+
 #pragma once
 
 #include <QObject>

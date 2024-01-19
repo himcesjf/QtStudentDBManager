@@ -1,3 +1,10 @@
+/*
+ * QML file for the student data entry form in the client application.
+ * Provides UI components for adding and editing student records.
+ */
+
+
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts

@@ -1,3 +1,8 @@
+<!--
+Qt resource file listing all resources used in the client application.
+Includes QML files, images, and other assets compiled into the application.
+-->
+
 <RCC>
     <qresource prefix="/">
         <!-- UI components -->

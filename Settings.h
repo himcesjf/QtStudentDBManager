@@ -1,4 +1,8 @@
-// Note: Make sure to delete the config file before every change as this code only changes value if the parameters don't exist at all
+/*
+ * Header file containing application settings and configurations.
+ * Defines various constants and parameters used throughout the application.
+ * Note: Make sure to delete the config file before every change as this code only changes value if the parameters don't exist at all
+ */
 
 #pragma once
 

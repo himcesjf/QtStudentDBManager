@@ -1,3 +1,9 @@
+/*
+ * QML file defining the student data view in the client application.
+ * Presents student data in a tabular format and handles user interactions.
+ */
+
+
 import QtQuick
 import QtQuick.Controls
 

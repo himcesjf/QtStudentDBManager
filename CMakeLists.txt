@@ -1,3 +1,7 @@
+# This is the CMake configuration file for the QtStudentDBManager project.
+# It defines the project settings, required Qt modules, and sets up the build for both the client and server applications.
+
+
 cmake_minimum_required(VERSION 3.14)
 project(QtStudentDBManager)
 

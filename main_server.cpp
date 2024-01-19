@@ -1,3 +1,9 @@
+/*
+ * Entry point for the server application of QtStudentDBManager.
+ * It initializes the server components including StudentDatabase and StudentServer, and sets up signal-slot connections for handling client requests.
+ */
+
+
 #include "NetworkMessage.h"
 #include "Student.h"
 #include "StudentDatabase.h"

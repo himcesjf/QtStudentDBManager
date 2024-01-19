@@ -1,3 +1,9 @@
+/*
+ * Implementation of the StudentModel class.
+ * Manages the data model for the client application, interfacing with the server for data synchronization.
+ */
+
+
 #include "StudentModel.h"
 #include "NetworkMessage.h"
 #include "Settings.h"

@@ -1,3 +1,8 @@
+/*
+ * Entry point for the client application of QtStudentDBManager.
+ * It sets up the client-side GUI, processes command-line arguments, and initializes the local database and model.
+ */
+
 #include "Settings.h"
 #include "StudentModel.h"
 #include "Student.h"

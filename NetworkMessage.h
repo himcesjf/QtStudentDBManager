@@ -1,3 +1,9 @@
+/*
+ * Header file for the NetworkMessage class.
+ * Declares the structure and functionalities for network message handling in the application.
+ */
+
+
 #pragma once
 
 #include <QDataStream>

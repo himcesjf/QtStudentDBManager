@@ -1,3 +1,9 @@
+/*
+ * Implementation of the StudentServer class.
+ * Manages network communications and request handling for the server application.
+ */
+
+
 #include "StudentServer.h"
 #include "NetworkMessage.h"
 #include "Settings.h"

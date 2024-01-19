@@ -1,3 +1,9 @@
+/*
+ * Header file for the Student class.
+ * Declares the structure and functionalities of the Student objects used in the application.
+ */
+
+
 #pragma once
 
 #include <QObject>
