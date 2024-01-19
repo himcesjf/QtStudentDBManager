@@ -114,7 +114,7 @@ GridLayout {
         onClicked: {
             successMsg.visible = false;
             model.updateStudent(privateData.currentId, firstName.text,
-                lastName.text, middleName.text, roll.text, className.text, schoolName.text);
+                lastName.text, middleName.text, roll.text, className.text);
         }
     }
     
