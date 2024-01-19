@@ -30,7 +30,7 @@ add_executable(client
     ${QML_RESOURCES}
     ${SHARED_SRC}
 )
-target_link_libraries(client Qt6::Core Qt6::Network Qt6::Qml Qt6::Quick)
+target_link_libraries(client Qt6::Core Qt6::Network Qt6::Qml Qt6::Quick Qt6::Sql)
 
 # Server executable
 add_executable(server

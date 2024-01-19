@@ -11,7 +11,9 @@
 StudentDatabase::StudentDatabase(QObject *parent)
     : QObject(parent)
 {
-    m_db = QSqlDatabase::addDatabase(QStringLiteral("QPSQL"), QStringLiteral("studentDatabase"));
+    //Set up remote database on server side
+    QString connectionName = "serverDb"; // Name for the PostgreSQL connection
+    m_db = QSqlDatabase::addDatabase(QStringLiteral("QPSQL"), connectionName);
  
     Settings &settings = Settings::instance();
     

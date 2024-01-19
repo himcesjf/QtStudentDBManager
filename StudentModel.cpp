@@ -18,25 +18,6 @@ StudentModel::StudentModel(QObject *parent)
     , m_error {false}
 {
     connectToServer();
-
-
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("studentsdb.sqlite");
-
-    if (!db.open()) {
-    qDebug() << "Error: Failed to open database. Error message: " << db.lastError().text();
-    }
-
-    QSqlQuery query(db);
-    query.prepare("CREATE TABLE IF NOT EXISTS school ("
-            "id INTEGER PRIMARY KEY, "
-            "name TEXT, "
-            "schoolName TEXT, "
-            "versionNumber INTEGER)");
-
-    if (!query.exec()) {
-        qDebug() << "Error: Failed to create the 'school' table. Error message: " << query.lastError().text();
-    }
 }
 
 StudentModel::~StudentModel()
