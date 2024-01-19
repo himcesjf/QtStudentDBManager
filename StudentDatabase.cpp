@@ -85,7 +85,7 @@ void StudentDatabase::enterStudent(Student *student)
     if (student->id() == -1) {
         qDebug() << "New student for database:" << student;
 
-        query.prepare("INSERT INTO students (firstName, middleName, lastName, roll, class) "
+        query.prepare("INSERT INTO students (firstName, middleName, lastName, roll, class, school) "
             "VALUES (:firstName, :middleName, :lastName, :roll, :class, :school)");
         
         query.bindValue(":firstName", student->firstName());
