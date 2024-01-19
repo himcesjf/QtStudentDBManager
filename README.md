@@ -81,42 +81,42 @@ The application consists of two main components:
 - **Serialization/Deserialization**: Ensures efficient and correct data transmission over the network.
 - **Error Handling**: Robust error management for network issues, database errors, and data format problems.
 
-### Description of each Component
+# Description of each Component
 
 ## Shared code:
-# Settings.h:
+### Settings.h:
 Convenience singleton class to read/write settings values from the .ini file. Quite basic, could use some improvement like getters that fall back to defaults if stuff in the file is missing or invalid, rather than writing defaults to the file.
 
-# Student.h/cpp
+### Student.h/cpp
 Class to store student data in memory. Basically just a data struct, but inherits from QObject for property support. Would be nicer as a Q_GADGET instead as it doesn't need all QObject features. Supports serialization/deserialization to QDataStream for network transfer. The id field defaults to -1 which the server understands as a new student not yet in the db.
 
-# NetworkMessage.h/cpp:
+### NetworkMessage.h/cpp:
 Another data struct with serialization/deserialization support for network transfer. This is what client and server now exchange. It has a type field to allow them to distinguish what they are receiving and act accordingly. StatusMessage is used for messages, StorageConfirmation is used to confirm db inserts and respond with the id (important for new rows, when the client must be told the id by the server after db insert) and StudentObject is used to send student data. The payload field is a string (message), or an int (id) or a byte array (serialized student object). So, basically it's a wrapper over some data, with some metadata.
 
 ## Server code:
-# main_server.cpp
+### main_server.cpp
 The main, just instanciates a QApp, creates instances of the db and network server classes and makes signal/slot connections between them (as per the requirements).
 
-# StudentDatabase.h/cpp:
+### StudentDatabase.h/cpp:
 Does the QSql database bits, like creating the table, retrieving students, inserting, updating
 
-# StudentServer.h/cpp
+### StudentServer.h/cpp
 TCP server, exchanges NetworkMessages with client. Still sends out students on connect, now also receives them and sends back confirmation. The confirmation contains the id of the student inserted or altered, so that the client can update its model. If the server gets an id -1 student it knows it has to insert it new and generate a new id for the client to adopt.
 
 ## Client code:
-# main_client.cpp:
+### main_client.cpp:
 The main, sets up QML engine and initiates GUI
 
-# main.qml:
+### main.qml:
 Main window layout, sets up table, sidebar, etc.
 
-# StudentView.qml:
+### StudentView.qml:
 Table view
 
-# StudentForm.qml
+### StudentForm.qml
 Sidebar editing form
 
-# StudentModel.h/cpp
+### StudentModel.h/cpp
 Connects to server, grabs data, maps it to model API for consumption by GUI. Also has a slot to add/update students (and them to the server), where id -1 means a new student. Also has error and success props/signals for use by the GUI.
 
 ## Summary
