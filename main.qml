@@ -30,6 +30,7 @@ ApplicationWindow {
 
         model: StudentModel {
             id: studentModel
+            school: Application.organization
 
             onRowsInserted: view.selectionModel.setCurrentIndex(index(rowCount() - 1, 0),
                 ItemSelectionModel.SelectCurrent)

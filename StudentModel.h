@@ -10,14 +10,17 @@
 
 #include <QAbstractTableModel>
 #include <QPointer>
+#include <QQmlParserStatus>
 
 class Settings;
 class QTcpSocket;
 
-class StudentModel : public QAbstractTableModel
+class StudentModel : public QAbstractTableModel, public QQmlParserStatus
 {
     Q_OBJECT
+    Q_INTERFACES(QQmlParserStatus)
     Q_PROPERTY(QString cliSchoolName READ getCliSchoolName CONSTANT)
+    Q_PROPERTY(QString school READ getSchool WRITE setSchool NOTIFY schoolChanged)
     Q_PROPERTY(bool error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
 
@@ -26,6 +29,10 @@ public:
     ~StudentModel();
 
     QString getCliSchoolName() const;
+
+    QString getSchool() const;
+    void setSchool(const QString &school);
+
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
@@ -40,8 +47,12 @@ public:
     QString errorString() const;
     Q_INVOKABLE void resetError();
 
+    void classBegin() override;
+    void componentComplete() override;
+
     
 Q_SIGNALS:
+    void schoolChanged();
     void storageSuccess() const;
     void errorChanged() const;
     void errorStringChanged() const;
@@ -53,6 +64,7 @@ private Q_SLOTS:
     void checkStorageConfirmed();
 
 private:
+    QString m_school;
     QString m_cliSchoolName;
     void insertStudent(Student *student);
     void clearStudents();

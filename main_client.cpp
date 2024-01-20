@@ -38,16 +38,17 @@ int main(int argc, char *argv[])
         parser.showHelp(1); //https://doc.qt.io/qt-6/qcommandlineparser.html#showHelp
     }
 
-    QString cliSchoolName = parser.value(schoolOption);
+    const QString& cliSchoolName = parser.value(schoolOption);
     qDebug() << "From client:" << cliSchoolName;
+    app.setOrganizationName(cliSchoolName);
 
-    // Create StudentModel instance
-    StudentModel *model = new StudentModel(nullptr, cliSchoolName);
-
-
-    const QString &appDataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    const QString appDataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QDir dir;
     dir.mkdir(appDataDir);
+    if (!dir.exists()) {
+    qDebug() << "Error: Directory does not exist and could not be created.";
+    return 1;
+}
 
     // Set up local database on client side
     QString connectionName = "localDb";
@@ -56,6 +57,10 @@ int main(int argc, char *argv[])
     qDebug() << "Database at:" << db.databaseName();
     qDebug() << "Database connection name:" << connectionName;
 
+    if (!db.isValid()) {
+    qDebug() << "Error: Database connection is not valid.";
+    return 1;
+}
 
     if (!db.open()) {
         qDebug() << "Error: Failed to open database. Error message: " << db.lastError().text();

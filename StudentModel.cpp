@@ -24,8 +24,7 @@ StudentModel::StudentModel(QObject *parent, const QString &schoolName)
     , m_storageConfirmed {false}
     , m_error {false}
 {
-    connectToServer();
-    qDebug() << "From StudentModel constructor, instance:" << this << "cliSchoolName:" << m_cliSchoolName;
+
 }
 
 StudentModel::~StudentModel()
@@ -40,6 +39,17 @@ StudentModel::~StudentModel()
 
     qDeleteAll(m_students);
     m_students.clear();
+}
+
+QString StudentModel::getSchool() const {
+    return m_school;
+}
+
+void StudentModel::setSchool(const QString &school) {
+    if (m_school != school) {
+        m_school = school;
+        emit schoolChanged();
+    }
 }
 
 QString StudentModel::getCliSchoolName() const {
@@ -290,4 +300,13 @@ void StudentModel::resetError()
         emit errorChanged();
         emit errorStringChanged();
     }
+}
+
+void StudentModel::classBegin()
+{
+}
+
+void StudentModel::componentComplete()
+{
+    connectToServer();
 }
