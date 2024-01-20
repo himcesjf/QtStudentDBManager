@@ -26,7 +26,7 @@ public Q_SLOTS:
     void sendStudents(const QVector<Student*> &students);
     
 Q_SIGNALS:
-    void requestSchoolStudents();
+    void requestSchoolStudents(const QString &schoolName);
     void requestAllStudents();
     void studentReceived(Student *student) const;
     
