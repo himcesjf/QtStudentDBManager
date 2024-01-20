@@ -23,6 +23,7 @@
 int main(int argc, char *argv[])
 {
     QGuiApplication app {argc, argv};
+    app.setApplicationName("QtStudentDBManager");
 
     QCommandLineParser parser;
     parser.setApplicationDescription("Client Application");
@@ -42,25 +43,25 @@ int main(int argc, char *argv[])
     qDebug() << "From client:" << cliSchoolName;
     app.setOrganizationName(cliSchoolName);
 
-    const QString appDataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    QDir dir;
-    dir.mkdir(appDataDir);
+    // Determine the Data Directory Path
+    const QString appDataDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QDir::separator() + app.applicationName();
+
+    // Create the Directory if it doesn't exist
+    QDir dir(appDataDir);
     if (!dir.exists()) {
-    qDebug() << "Error: Directory does not exist and could not be created.";
-    return 1;
-}
+        bool created = dir.mkpath(".");
+        if (!created) {
+            qDebug() << "Error: Directory does not exist and could not be created.";
+            return 1;
+        }
+    }
 
     // Set up local database on client side
     QString connectionName = "localDb";
-    QSqlDatabase db =  QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), connectionName);
-    db.setDatabaseName(QDir::toNativeSeparators(appDataDir + QStringLiteral("/students.db")));
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
+    db.setDatabaseName(QDir::toNativeSeparators(appDataDir + QDir::separator() + "students.db"));
     qDebug() << "Database at:" << db.databaseName();
     qDebug() << "Database connection name:" << connectionName;
-
-    if (!db.isValid()) {
-    qDebug() << "Error: Database connection is not valid.";
-    return 1;
-}
 
     if (!db.open()) {
         qDebug() << "Error: Failed to open database. Error message: " << db.lastError().text();
