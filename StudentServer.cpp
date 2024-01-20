@@ -29,8 +29,7 @@ StudentServer::StudentServer(QObject *parent)
             .arg(m_tcpServer->serverAddress().toString())
             .arg(m_tcpServer->serverPort());
             
-    QObject::connect(m_tcpServer, &QTcpServer::newConnection,
-        this, &StudentServer::newClientConnected);
+    QObject::connect(m_tcpServer, &QTcpServer::newConnection, this, &StudentServer::newClientConnected);
 }
 
 StudentServer::~StudentServer()
