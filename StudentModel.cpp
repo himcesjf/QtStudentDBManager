@@ -144,8 +144,8 @@ void StudentModel::connectToServer()
         QDataStream out(m_socket);
         out.setVersion(QDataStream::Qt_6_0);
         out << NetworkMessage(NetworkMessage::StatusMessage, "Hello server!");
-        qDebug() << "From lambda, instance:" << this << "cliSchoolName:" << this->m_cliSchoolName;
-        out << NetworkMessage(NetworkMessage::SchoolRequest, this->m_cliSchoolName);
+        qDebug() << "From lambda, instance:" << this << "school:" << this->m_school;
+        out << NetworkMessage(NetworkMessage::SchoolRequest, this->m_school);
     });
 
 
