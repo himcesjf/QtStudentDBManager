@@ -104,6 +104,7 @@ void StudentServer::readFromClient() {
             qDebug() << "Received message from client:" << receivedMsg->payload().toString();
         } else if (receivedMsg->type() == NetworkMessage::SchoolRequest) {
             QString schoolName = receivedMsg->payload().toString();
+            qDebug() << "Received School Request from client: " << schoolName;
             emit requestSchoolStudents(schoolName);
         } else {
             QDataStream studentStream(receivedMsg->payload().toByteArray());

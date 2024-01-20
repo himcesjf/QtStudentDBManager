@@ -65,7 +65,7 @@ void StudentDatabase::sendSchoolStudents(const QString &schoolName)
 
     QVector<Student*> students;
 
-    do {
+    while (query.next()) {
             Student *student = new Student(nullptr,
                 query.value("id").toInt(),
                 query.value("firstName").toString(),
@@ -75,7 +75,7 @@ void StudentDatabase::sendSchoolStudents(const QString &schoolName)
                 query.value("class").toString(),
                 query.value("school").toString());
             students.append(student);
-        } while (query.next());
+        }
 
     emit allStudents(students);
 }
