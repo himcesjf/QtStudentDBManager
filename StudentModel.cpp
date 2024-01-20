@@ -25,6 +25,7 @@ StudentModel::StudentModel(QObject *parent, const QString &schoolName)
     , m_error {false}
 {
     connectToServer();
+    qDebug() << "From StudentModel constructor, instance:" << this << "cliSchoolName:" << m_cliSchoolName;
 }
 
 StudentModel::~StudentModel()
@@ -124,7 +125,7 @@ void StudentModel::connectToServer()
 
     qDebug() << QString("Connecting to server %1:%2 ...").arg(settings.value("client/serverHost").toString()).arg(settings.value("client/serverPort").toUInt());
 
-    QObject::connect(m_socket, &QTcpSocket::connected, this, [=]() {
+    QObject::connect(m_socket, &QTcpSocket::connected, this, [this]() {
         qDebug() << QString("Connected to server %1:%2.")
             .arg(m_socket->peerAddress().toString())
             .arg(m_socket->peerPort());
@@ -133,7 +134,8 @@ void StudentModel::connectToServer()
         QDataStream out(m_socket);
         out.setVersion(QDataStream::Qt_6_0);
         out << NetworkMessage(NetworkMessage::StatusMessage, "Hello server!");
-        out << NetworkMessage(NetworkMessage::SchoolRequest, m_cliSchoolName);
+        qDebug() << "From lambda, instance:" << this << "cliSchoolName:" << this->m_cliSchoolName;
+        out << NetworkMessage(NetworkMessage::SchoolRequest, this->m_cliSchoolName);
     });
 
 

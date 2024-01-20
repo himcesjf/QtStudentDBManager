@@ -33,13 +33,16 @@ int main(int argc, char *argv[])
     parser.addOption(schoolOption);
     parser.process(app);
 
-    QString cliSchoolName = parser.value(schoolOption);
-
-
     if (!parser.isSet(schoolOption)) {
         qCritical() << "Error: School name must be provided. Use --school <name>.";
         parser.showHelp(1); //https://doc.qt.io/qt-6/qcommandlineparser.html#showHelp
     }
+
+    QString cliSchoolName = parser.value(schoolOption);
+    qDebug() << "From client:" << cliSchoolName;
+
+    // Create StudentModel instance
+    StudentModel *model = new StudentModel(nullptr, cliSchoolName);
 
 
     const QString &appDataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
@@ -73,9 +76,6 @@ int main(int argc, char *argv[])
         qDebug() << "Error: Failed to create the 'students' table on client-side. Error message: " << query.lastError().text();
         return 1;
     }
-
-    // Create StudentModel instance
-    StudentModel *model = new StudentModel(nullptr, cliSchoolName);
 
     //Register StudentModel with QML
     qmlRegisterType<StudentModel>("com.student.manager", 1, 0, "StudentModel");

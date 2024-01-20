@@ -17,7 +17,7 @@ ApplicationWindow {
 
     visible: true
 
-    title: "Student Manager - " + studentModel.cliSchoolName
+    title: "Student Manager - " + StudentModel.cliSchoolName
 
     StudentView {
         id: view
