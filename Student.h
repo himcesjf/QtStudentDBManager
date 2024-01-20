@@ -30,7 +30,8 @@ public:
         const QString &lastName = QString(),
         int roll = 0,
         const QString &className = QString(),
-        const QString &schoolName = QString());
+        const QString &schoolName = QString(),
+        int version =1);
     ~Student();
 
     int id() const;
@@ -54,6 +55,9 @@ public:
     QString schoolName() const;
     void setSchoolName(const QString &schoolName);
 
+    int version() const;
+    void setVersion(int version);
+
     // Serialization
     void serialize(QDataStream &out) const;
     void deserialize(QDataStream &in);
@@ -66,6 +70,7 @@ private:
     QString m_className;
     QString m_schoolName;
     int m_id;
+    int m_version;
 };
 
 
@@ -93,7 +98,8 @@ inline QDebug operator<<(QDebug debug, const Student *student)
             << ", Last Name: " << student->lastName()
             << ", Roll: " << student->roll()
             << ", Class Name: " << student->className()
-            << ", School Name: " << student->schoolName() << ')';
+            << ", School Name: " << student->schoolName()
+            << ", Version: " << student->version() << ')';
     } else {
         debug.nospace() << "Student: nullptr";
     }

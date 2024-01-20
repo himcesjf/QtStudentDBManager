@@ -7,7 +7,7 @@
 #include "Student.h"
 
 Student::Student(QObject *parent, int id, const QString &firstName, const QString &middleName, 
-    const QString &lastName, int roll, const QString &className, const QString &schoolName)
+    const QString &lastName, int roll, const QString &className, const QString &schoolName, int version)
     : QObject(parent)
     , m_id(id)
     , m_firstName(firstName)
@@ -16,6 +16,7 @@ Student::Student(QObject *parent, int id, const QString &firstName, const QStrin
     , m_roll(roll)
     , m_className(className)
     , m_schoolName(schoolName)
+    , m_version(version)
 {
 }
 
@@ -75,10 +76,17 @@ void Student::setSchoolName(const QString &schoolName) {
     m_schoolName = schoolName;
 }
 
+int Student::version() const {
+    return m_version;
+}
+void Student::setVersion(int version) {
+    m_version = version;
+}
+
 void Student::serialize(QDataStream &out) const {
-    out << m_id << m_firstName << m_lastName << m_middleName << m_roll << m_className << m_schoolName;
+    out << m_id << m_firstName << m_lastName << m_middleName << m_roll << m_className << m_schoolName << m_version;
 }
 
 void Student::deserialize(QDataStream &in) {
-    in >> m_id >> m_firstName >> m_lastName >> m_middleName >> m_roll >> m_className << m_schoolName;
+    in >> m_id >> m_firstName >> m_lastName >> m_middleName >> m_roll >> m_className << m_schoolName << m_version;
 }
