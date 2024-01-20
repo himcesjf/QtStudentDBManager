@@ -62,6 +62,7 @@ Q_SIGNALS:
     void storageSuccess() const;
     void errorChanged() const;
     void errorStringChanged() const;
+    void versionConflictDetected(int studentId, int currentVersion, int attemptedVersion);
 
 private Q_SLOTS:
     void readFromServer();

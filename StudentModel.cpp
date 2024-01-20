@@ -332,7 +332,18 @@ void StudentModel::insertStudentToDB(const Student &student) {
 }
 
 void StudentModel::updateStudentInDB(const Student &student) {
+
     QSqlQuery query;
+    query.prepare("SELECT version FROM students WHERE id = :id");
+    query.bindValue(":id", student.id());
+    if (query.exec() && query.next()) {
+        const int currentVersion = query.value(0).toInt();
+        if (currentVersion != student.version()) {
+            emit versionConflictDetected(student.id(), currentVersion, student.version());
+            return;
+        }
+    } else
+    {
     query.prepare("UPDATE students SET firstName = :firstName, middleName = :middleName, lastName = :lastName, "
                   "roll = :roll, class = :class, school = :school, version = :version WHERE id = :id");
     query.bindValue(":id", student.id());
@@ -342,9 +353,10 @@ void StudentModel::updateStudentInDB(const Student &student) {
     query.bindValue(":roll", student.roll());
     query.bindValue(":class", student.className());
     query.bindValue(":school", student.schoolName());
-    query.bindValue(":version", student.version() + 1);
+    query.bindValue(":version", student.version() + 1); //Increment version number
     if (!query.exec()) {
         qDebug() << "Error updating student:" << query.lastError();
+        }
     }
 }
 
