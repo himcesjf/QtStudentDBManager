@@ -20,6 +20,8 @@ int main(int argc, char *argv[])
     StudentDatabase db {&app};
     StudentServer server {&app};
     
+    QObject::connect(&server, &StudentServer::requestSchoolStudents,
+        &db, &StudentDatabase::sendSchoolStudents);
     QObject::connect(&server, &StudentServer::requestAllStudents,
         &db, &StudentDatabase::allStudentsRequested);
     QObject::connect(&server, &StudentServer::studentReceived,

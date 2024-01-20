@@ -55,7 +55,8 @@ int main(int argc, char *argv[])
 
 
     if (!db.open()) {
-    qDebug() << "Error: Failed to open database. Error message: " << db.lastError().text();
+        qDebug() << "Error: Failed to open database. Error message: " << db.lastError().text();
+        return 1;
     }
 
     QSqlQuery query(db);
@@ -70,12 +71,16 @@ int main(int argc, char *argv[])
 
     if (!query.exec()) {
         qDebug() << "Error: Failed to create the 'students' table on client-side. Error message: " << query.lastError().text();
+        return 1;
     }
 
+    // Create StudentModel instance
+    StudentModel *model = new StudentModel(nullptr, cliSchoolName);
 
-
-
+    //Register StudentModel with QML
     qmlRegisterType<StudentModel>("com.student.manager", 1, 0, "StudentModel");
+
+    // Set up QML application engine
     QQmlApplicationEngine engine {&app};
     engine.load(QUrl {QStringLiteral("qrc:///main.qml")});
 

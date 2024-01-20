@@ -52,6 +52,35 @@ StudentDatabase::~StudentDatabase()
     }
 }
 
+void StudentDatabase::sendSchoolStudents(const QString &schoolName)
+{
+    QSqlQuery query(m_db);
+    query.prepare("SELECT * FROM students WHERE school = :schoolName");
+    query.bindValue(":schoolName", schoolName);
+
+    if (!query.exec()) {
+        qCritical() << "Send school students query failed." << query.lastError().text();
+        return;
+    }
+
+    QVector<Student*> students;
+
+    do {
+            Student *student = new Student(nullptr,
+                query.value("id").toInt(),
+                query.value("firstName").toString(),
+                query.value("middleName").toString(),
+                query.value("lastName").toString(),
+                query.value("roll").toInt(),
+                query.value("class").toString(),
+                query.value("school").toString());
+            students.append(student);
+        } while (query.next());
+
+    emit allStudents(students);
+}
+
+
 void StudentDatabase::allStudentsRequested() const
 {
     QSqlQuery query("SELECT * FROM students", m_db);

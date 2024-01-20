@@ -21,6 +21,7 @@ public:
     
 public Q_SLOTS:
     void allStudentsRequested() const;
+    void sendSchoolStudents(const QString &schoolName);
     void enterStudent(Student *student);
     
 Q_SIGNALS:

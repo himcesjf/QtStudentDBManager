@@ -17,8 +17,9 @@
 #include <QSqlQuery>
 #include <QDebug>
 
-StudentModel::StudentModel(QObject *parent)
+StudentModel::StudentModel(QObject *parent, const QString &schoolName)
     : QAbstractTableModel(parent)
+    , m_cliSchoolName(schoolName)
     , m_socket {nullptr}
     , m_storageConfirmed {false}
     , m_error {false}
@@ -124,10 +125,11 @@ void StudentModel::connectToServer()
             .arg(m_socket->peerAddress().toString())
             .arg(m_socket->peerPort());
             
-        // Send a welcome message
+        // Send a welcome message followed by a SchoolRequest to use client school argument
         QDataStream out(m_socket);
         out.setVersion(QDataStream::Qt_6_0);
         out << NetworkMessage(NetworkMessage::StatusMessage, "Hello server!");
+        out << NetworkMessage(NetworkMessage::SchoolRequest, m_cliSchoolName);
     });
 
 

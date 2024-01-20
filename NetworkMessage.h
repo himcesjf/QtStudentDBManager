@@ -18,7 +18,8 @@ public:
     enum MessageType {
         StatusMessage,
         StorageConfirmation,
-        StudentObject
+        StudentObject,
+        SchoolRequest
     };
 
     NetworkMessage(MessageType type = StatusMessage,

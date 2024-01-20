@@ -22,7 +22,7 @@ class StudentModel : public QAbstractTableModel
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
 
 public:
-    explicit StudentModel(QObject *parent = nullptr);
+    explicit StudentModel(QObject *parent = nullptr, const QString &schoolName = QString());
     ~StudentModel();
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -52,6 +52,7 @@ private Q_SLOTS:
     void checkStorageConfirmed();
 
 private:
+    QString m_cliSchoolName;
     void insertStudent(Student *student);
     void clearStudents();
     

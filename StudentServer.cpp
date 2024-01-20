@@ -91,18 +91,20 @@ void StudentServer::newClientConnected()
     emit requestAllStudents();
 }
 
-void StudentServer::readFromClient()
-{
+void StudentServer::readFromClient() {
     QByteArray incomingData = m_currentConnection->readAll();
     QDataStream in(&incomingData, QIODevice::ReadOnly);
     in.setVersion(QDataStream::Qt_6_0);
 
-    while (!in.atEnd()){
+    while (!in.atEnd()) {
         NetworkMessage *receivedMsg = new NetworkMessage();
         in >> *receivedMsg;
-        
+
         if (receivedMsg->type() == NetworkMessage::StatusMessage) {
             qDebug() << "Received message from client:" << receivedMsg->payload().toString();
+        } else if (receivedMsg->type() == NetworkMessage::SchoolRequest) {
+            QString schoolName = receivedMsg->payload().toString();
+            emit requestSchoolStudents(schoolName);
         } else {
             QDataStream studentStream(receivedMsg->payload().toByteArray());
             studentStream.setVersion(QDataStream::Qt_6_0);
@@ -111,7 +113,8 @@ void StudentServer::readFromClient()
             qDebug() << "Received student from client:" << student;
             emit studentReceived(student);
         }
-        
+
         delete receivedMsg;
     }
 }
+
