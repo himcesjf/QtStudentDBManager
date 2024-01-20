@@ -87,7 +87,7 @@ void StudentServer::newClientConnected()
     out.setVersion(QDataStream::Qt_6_0);
     out << NetworkMessage(NetworkMessage::StatusMessage, "Hello client!");
     
-    emit requestAllStudents();
+    //emit requestAllStudents(); //Comment if want students to be sent by school name
 }
 
 void StudentServer::readFromClient() {
