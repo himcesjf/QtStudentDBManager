@@ -50,6 +50,12 @@ public:
     void classBegin() override;
     void componentComplete() override;
 
+    //Local database operations
+    void insertStudentToDB(const Student &student);
+    void updateStudentInDB(const Student &student);
+    void deleteStudentFromDB(int studentId);
+    void loadStudentsFromDB();
+
     
 Q_SIGNALS:
     void schoolChanged();

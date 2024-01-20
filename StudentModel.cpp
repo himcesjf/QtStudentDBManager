@@ -15,6 +15,7 @@
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QSqlError>
 #include <QDebug>
 
 StudentModel::StudentModel(QObject *parent, const QString &schoolName)
@@ -245,6 +246,7 @@ void StudentModel::updateStudent(int id, const QString &firstName,
         Student *newStudent = new Student(nullptr, id, firstName, middleName, lastName, roll, className);
         insertStudent(newStudent);
         sendToServer(newStudent);
+        insertStudentToDB(*newStudent);
     } else {
         for (int i = 0; i < m_students.length(); ++i) {
             Student *existingStudent = m_students.at(i);
@@ -260,6 +262,7 @@ void StudentModel::updateStudent(int id, const QString &firstName,
                 emit dataChanged(index(i, 0), index(i, columnCount() - 1));
                 
                 sendToServer(existingStudent);
+                updateStudentInDB(*existingStudent);
                 
                 break;
             }
@@ -309,4 +312,70 @@ void StudentModel::classBegin()
 void StudentModel::componentComplete()
 {
     connectToServer();
+}
+
+
+// Local database operations
+void StudentModel::insertStudentToDB(const Student &student) {
+    QSqlQuery query;
+    query.prepare("INSERT INTO students (firstName, middleName, lastName, roll, class, school, version) "
+                  "VALUES (:firstName, :middleName, :lastName, :roll, :class, :school, 1)");
+    query.bindValue(":firstName", student.firstName());
+    query.bindValue(":middleName", student.middleName());
+    query.bindValue(":lastName", student.lastName());
+    query.bindValue(":roll", student.roll());
+    query.bindValue(":class", student.className());
+    query.bindValue(":school", student.schoolName());
+    if (!query.exec()) {
+        qDebug() << "Error inserting student:" << query.lastError();
+    }
+}
+
+void StudentModel::updateStudentInDB(const Student &student) {
+    QSqlQuery query;
+    query.prepare("UPDATE students SET firstName = :firstName, middleName = :middleName, lastName = :lastName, "
+                  "roll = :roll, class = :class, school = :school, version = :version WHERE id = :id");
+    query.bindValue(":id", student.id());
+    query.bindValue(":firstName", student.firstName());
+    query.bindValue(":middleName", student.middleName());
+    query.bindValue(":lastName", student.lastName());
+    query.bindValue(":roll", student.roll());
+    query.bindValue(":class", student.className());
+    query.bindValue(":school", student.schoolName());
+    query.bindValue(":version", student.version() + 1);
+    if (!query.exec()) {
+        qDebug() << "Error updating student:" << query.lastError();
+    }
+}
+
+void StudentModel::deleteStudentFromDB(int studentId) {
+    QSqlQuery query;
+    query.prepare("DELETE FROM students WHERE id = :id");
+    query.bindValue(":id", studentId);
+    if (!query.exec()) {
+        qDebug() << "Error deleting student:" << query.lastError();
+    }
+}
+
+void StudentModel::loadStudentsFromDB() {
+    QSqlQuery query("SELECT * FROM students");
+
+    if (!query.next()) {
+        qDebug() << "No students in database.";
+        return;
+    }
+
+    QVector<Student*> students;
+
+    do {
+        Student *student = new Student(nullptr,
+            query.value("id").toInt(),
+            query.value("firstName").toString(),
+            query.value("middleName").toString(),
+            query.value("lastName").toString(),
+            query.value("roll").toInt(),
+            query.value("class").toString(),
+            query.value("school").toString());
+        students.append(student);
+    } while (query.next());
 }
