@@ -17,7 +17,7 @@ class QTcpSocket;
 class StudentModel : public QAbstractTableModel
 {
     Q_OBJECT
-    
+    Q_PROPERTY(QString cliSchoolName READ getCliSchoolName CONSTANT)
     Q_PROPERTY(bool error READ error NOTIFY errorChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
 
@@ -25,6 +25,7 @@ public:
     explicit StudentModel(QObject *parent = nullptr, const QString &schoolName = QString());
     ~StudentModel();
 
+    QString getCliSchoolName() const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;

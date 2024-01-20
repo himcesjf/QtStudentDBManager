@@ -41,6 +41,10 @@ StudentModel::~StudentModel()
     m_students.clear();
 }
 
+QString StudentModel::getCliSchoolName() const {
+    return m_cliSchoolName;
+}
+
 int StudentModel::rowCount(const QModelIndex & /*parent*/) const
 {
     return m_students.size();
