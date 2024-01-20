@@ -17,7 +17,7 @@ ApplicationWindow {
 
     visible: true
 
-    title: "Student Manager"
+    title: "Student Manager - " + Application.organization
 
     StudentView {
         id: view
