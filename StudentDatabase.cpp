@@ -177,7 +177,8 @@ void StudentDatabase::createTable()
         "lastName TEXT, "
         "roll INTEGER, "
         "class TEXT, "
-        "school TEXT)")) {qCritical() << "Error creating table: " << query.lastError().text(); return;}
+        "school TEXT, "
+        "version INTEGER DEFAULT 1)")) {qCritical() << "Error creating table: " << query.lastError().text(); return;}
 
         qDebug() <<"Table 'students' created or already exists on server side.";
 }

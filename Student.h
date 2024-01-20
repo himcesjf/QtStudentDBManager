@@ -58,8 +58,6 @@ public:
     void serialize(QDataStream &out) const;
     void deserialize(QDataStream &in);
 
-    void incrementVersion();
-
 private:
     QString m_firstName;
     QString m_middleName;
@@ -68,8 +66,6 @@ private:
     QString m_className;
     QString m_schoolName;
     int m_id;
-
-    int versionNumber;
 };
 
 
