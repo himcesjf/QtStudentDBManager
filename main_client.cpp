@@ -3,91 +3,46 @@
  * It sets up the client-side GUI, processes command-line arguments, and initializes the local database and model.
  */
 
+#include "ClientDatabase.h"
 #include "Settings.h"
 #include "StudentModel.h"
-#include "Student.h"
 
+#include <QCommandLineParser>
 #include <QDebug>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <QQmlContext>
-#include <QSettings>
-#include <QTcpSocket>
-#include <QCommandLineParser>
-#include <QDir>
-#include <QStandardPaths>
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QSqlError>
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app {argc, argv};
-    app.setApplicationName("QtStudentDBManager");
+    app.setApplicationName(QStringLiteral("QtStudentDBManager"));
 
     QCommandLineParser parser;
-    parser.setApplicationDescription("Client Application");
+    parser.setApplicationDescription(QStringLiteral("Client Application"));
     parser.addHelpOption();
 
-    // Open client with school option as a required argument
-    QCommandLineOption schoolOption("school", "Set the school name", "name");
+    const QCommandLineOption schoolOption(QStringLiteral("school"),
+        QStringLiteral("Set the school name"), QStringLiteral("name"));
     parser.addOption(schoolOption);
     parser.process(app);
 
     if (!parser.isSet(schoolOption)) {
         qCritical() << "Error: School name must be provided. Use --school <name>.";
-        parser.showHelp(1); //https://doc.qt.io/qt-6/qcommandlineparser.html#showHelp
+        parser.showHelp(1);
     }
 
     const QString& cliSchoolName = parser.value(schoolOption);
-    qDebug() << "From client:" << cliSchoolName;
+    qDebug() << "Client for school:" << cliSchoolName;
     app.setOrganizationName(cliSchoolName);
 
-    // Determine the Data Directory Path
-    const QString appDataDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QDir::separator() + app.applicationName();
-
-    // Create the Directory if it doesn't exist
-    QDir dir(appDataDir);
-    if (!dir.exists()) {
-        bool created = dir.mkpath(".");
-        if (!created) {
-            qDebug() << "Error: Directory does not exist and could not be created.";
-            return 1;
-        }
-    }
-
-    // Set up local database on client side
-    QString connectionName = "localDb";
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
-    db.setDatabaseName(QDir::toNativeSeparators(appDataDir + QDir::separator() + "students.db"));
-    qDebug() << "Database at:" << db.databaseName();
-    qDebug() << "Database connection name:" << connectionName;
-
-    if (!db.open()) {
-        qDebug() << "Error: Failed to open database. Error message: " << db.lastError().text();
+    // Init local database.
+    if (!ClientDatabase::createTables()) {
         return 1;
     }
 
-    QSqlQuery query(db);
-    query.prepare("CREATE TABLE IF NOT EXISTS students ("
-        "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," //For SQlite
-        "firstName TEXT, "
-        "middleName TEXT, "
-        "lastName TEXT, "
-        "roll INTEGER, "
-        "class TEXT, "
-        "school TEXT, "
-        "version INTEGER DEFAULT 1)");
-
-    if (!query.exec()) {
-        qDebug() << "Error: Failed to create the 'students' table on client-side. Error message: " << query.lastError().text();
-        return 1;
-    }
-
-    //Register StudentModel with QML
     qmlRegisterType<StudentModel>("com.student.manager", 1, 0, "StudentModel");
 
-    // Set up QML application engine
+    // Set up QML engine and main window component.
     QQmlApplicationEngine engine {&app};
     engine.load(QUrl {QStringLiteral("qrc:///main.qml")});
 

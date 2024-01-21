@@ -19,11 +19,18 @@ GridLayout {
     QtObject {
         id: privateData
         property int currentId: -1
+        property int currentVersion: 1
     }
-    
+
     Connections {
         target: model
-        
+
+        function onDataChanged() {
+            if (currentRow != -1) {
+                sync();
+            }
+        }
+
         function onStorageSuccess() {
             sync();
             successMsg.visible = true;
@@ -31,22 +38,26 @@ GridLayout {
     }
 
     onCurrentRowChanged: {
-        successMsg.visible = false;
-        sync();
+        if (currentRow != -1) {
+            model.resetError();
+            model.resetUpdated();
+        }
     }
-    
-    function sync() {        
+
+    function sync() {
         if (currentRow > -1) {
             privateData.currentId = model.data(model.index(currentRow, 0));
-            firstName.text = model.data(model.index(currentRow, 1));
-            lastName.text = model.data(model.index(currentRow, 2));
+            privateData.currentVersion = model.data(model.index(currentRow, 1));
+            firstName.text = model.data(model.index(currentRow, 2));
             middleName.text = model.data(model.index(currentRow, 3));
-            roll.text = model.data(model.index(currentRow, 4));
-            className.text = model.data(model.index(currentRow, 5));
+            lastName.text = model.data(model.index(currentRow, 4));
+            roll.text = model.data(model.index(currentRow, 5));
+            className.text = model.data(model.index(currentRow, 6));
         } else {
             console.log("Clearing form.")
 
             privateData.currentId = -1;
+            privateData.currentVersion = 1;
             firstName.text = "";
             lastName.text = "";
             middleName.text = "";
@@ -113,24 +124,27 @@ GridLayout {
 
         onClicked: {
             successMsg.visible = false;
-            model.updateStudent(privateData.currentId, firstName.text,
-                lastName.text, middleName.text, roll.text, className.text);
+            model.updateStudent(privateData.currentId, privateData.currentVersion,
+                firstName.text, middleName.text, lastName.text,
+                roll.text, className.text);
         }
     }
-    
+
     Text {
         id: successMsg
         Layout.row: 6
+        Layout.columnSpan: 2
         Layout.fillWidth: true
         visible: false
         text: "Successfully saved"
         color: "green"
         wrapMode: Text.Wrap
     }
-    
+
     Text {
         id: errorMsg
         Layout.row: 7
+        Layout.columnSpan: 2
         Layout.fillWidth: true
         visible: model.error
         text: model.errorString

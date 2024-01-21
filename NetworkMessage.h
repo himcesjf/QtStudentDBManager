@@ -12,14 +12,13 @@
 
 class Student;
 
-class NetworkMessage 
+class NetworkMessage
 {
 public:
     enum MessageType {
         StatusMessage,
-        StorageConfirmation,
-        StudentObject,
-        SchoolRequest
+        StudentsRequest,
+        StudentRecord,
     };
 
     NetworkMessage(MessageType type = StatusMessage,

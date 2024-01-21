@@ -30,16 +30,25 @@ set(SHARED_SRC
 # Client executable
 add_executable(client
     main_client.cpp
+    ClientDatabase.cpp
     StudentModel.cpp
     ${QML_RESOURCES}
     ${SHARED_SRC}
 )
 target_link_libraries(client Qt6::Core Qt6::Network Qt6::Qml Qt6::Quick Qt6::Sql)
 
+# Sync client executable
+add_executable(sync
+    main_sync.cpp
+    ClientDatabase.cpp
+    ${SHARED_SRC}
+)
+target_link_libraries(sync Qt6::Core Qt6::Network Qt6::Sql)
+
 # Server executable
 add_executable(server
     main_server.cpp
-    StudentDatabase.cpp
+    ServerDatabase.cpp
     StudentServer.cpp
     ${SHARED_SRC}
 )

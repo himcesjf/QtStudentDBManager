@@ -16,24 +16,23 @@ class QTcpSocket;
 
 class StudentServer : public QObject {
     Q_OBJECT
-    
+
 public:
     explicit StudentServer(QObject *parent = nullptr);
     ~StudentServer();
-    
+
 public Q_SLOTS:
-    void newStudentAdded(int id);
-    void sendStudents(const QVector<Student*> &students);
-    
+    // void newStudentAdded(int id);
+    void sendStudents(const QVector<Student *> &students);
+
 Q_SIGNALS:
-    void requestSchoolStudents(const QString &schoolName);
-    void requestAllStudents();
+    void requestStudents(const QString &school);
     void studentReceived(Student *student) const;
-    
+
 private Q_SLOTS:
     void newClientConnected();
     void readFromClient();
-    
+
 private:
     QTcpServer *m_tcpServer;
     QPointer<QTcpSocket> m_currentConnection;

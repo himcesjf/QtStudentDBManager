@@ -21,6 +21,16 @@ Item {
         clip: true
     }
 
+    Connections {
+        target: model
+
+        function onErrorChanged() {
+            if (model.error) {
+                table.selectionModel.clear();
+            }
+        }
+    }
+
     TableView {
         id: table
 
@@ -36,7 +46,12 @@ Item {
         columnSpacing: 1
 
         columnWidthProvider: function(col) {
-            return width / columns;
+            // Hide Version column.
+            if (col === 1) {
+                return 0;
+            }
+
+            return width / (columns - 1);
         }
 
         delegate: Rectangle {
@@ -45,7 +60,15 @@ Item {
 
             required property bool current
             required property bool selected
-            color: row === table.currentRow ? palette.highlight : palette.base
+            color: {
+                if (row === table.currentRow) {
+                    return palette.highlight;
+                } else if (model.decoration) {
+                    return "green";
+                }
+
+                return palette.base;
+            }
 
             Label {
                 x: 4

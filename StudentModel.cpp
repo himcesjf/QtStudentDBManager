@@ -5,6 +5,7 @@
 
 
 #include "StudentModel.h"
+#include "ClientDatabase.h"
 #include "NetworkMessage.h"
 #include "Settings.h"
 
@@ -18,31 +19,35 @@
 #include <QSqlError>
 #include <QDebug>
 
-StudentModel::StudentModel(QObject *parent, const QString &schoolName)
+StudentModel::StudentModel(QObject *parent)
     : QAbstractTableModel(parent)
-    , m_cliSchoolName(schoolName)
     , m_socket {nullptr}
-    , m_storageConfirmed {false}
     , m_error {false}
 {
-
 }
 
 StudentModel::~StudentModel()
 {
-     if (m_socket) {
-        m_socket->disconnectFromHost();
-        if (m_socket->state() == QAbstractSocket::UnconnectedState
-            || m_socket->waitForDisconnected(1000)) {
-            qDebug() << "Disconnected from server.";
-        }
+    if (m_socket
+        && (m_socket->state() == QAbstractSocket::UnconnectedState
+        || m_socket->waitForDisconnected(1000))) {
+        qDebug() << "Disconnected from server.";
     }
 
     qDeleteAll(m_students);
     m_students.clear();
 }
 
-QString StudentModel::getSchool() const {
+void StudentModel::classBegin()
+{
+}
+
+void StudentModel::componentComplete()
+{
+    connectToServer();
+}
+
+QString StudentModel::school() const {
     return m_school;
 }
 
@@ -53,10 +58,6 @@ void StudentModel::setSchool(const QString &school) {
     }
 }
 
-QString StudentModel::getCliSchoolName() const {
-    return m_cliSchoolName;
-}
-
 int StudentModel::rowCount(const QModelIndex & /*parent*/) const
 {
     return m_students.size();
@@ -64,33 +65,36 @@ int StudentModel::rowCount(const QModelIndex & /*parent*/) const
 
 int StudentModel::columnCount(const QModelIndex & /*parent*/) const
 {
-    return 6; // ID, First Name, Middle Name, Last Name, Roll, Class Name
+    return 7; // ID, Version, First Name, Middle Name, Last Name, Roll, Class, Updated
 }
 
 QVariant StudentModel::data(const QModelIndex &index, int role) const
 {
-    Q_UNUSED(role);
-
     if (!index.isValid() || index.row() < 0 || index.row() >= m_students.length()) {
         return QVariant();
     }
 
     const Student *student = m_students.at(index.row());
+
+    if (role == Qt::DecorationRole) {
+        return m_updatedFromLocal.contains(student->id());
+    }
+
     switch (index.column()) {
     case 0:
         return student->id();
     case 1:
-        return student->firstName();
+        return student->version();
     case 2:
-        return student->middleName();
+        return student->firstName();
     case 3:
-        return student->lastName();
+        return student->middleName();
     case 4:
-        return student->roll();
+        return student->lastName();
     case 5:
+        return student->roll();
+    case 6:
         return student->className();
-//    case 6:
-//        return student->schoolName();
     default:
         return QVariant();
     }
@@ -105,17 +109,17 @@ QVariant StudentModel::headerData(int section, Qt::Orientation orientation, int 
         case 0:
             return "ID";
         case 1:
-            return "First Name";
+            return "Version";
         case 2:
-            return "Middle Name";
+            return "First Name";
         case 3:
-            return "Last Name";
+            return "Middle Name";
         case 4:
-            return "Roll";
+            return "Last Name";
         case 5:
+            return "Roll";
+        case 6:
             return "Class";
-//        case 6:
-//            return "School";
         default:
             return QVariant();
     }
@@ -134,58 +138,51 @@ void StudentModel::connectToServer()
     m_socket->connectToHost(QHostAddress(settings.value("client/serverHost").toString()),
         settings.value("client/serverPort").toUInt());
 
-    qDebug() << QString("Connecting to server %1:%2 ...").arg(settings.value("client/serverHost").toString()).arg(settings.value("client/serverPort").toUInt());
+    qDebug() << QString("Connecting to server %1:%2 ...")
+        .arg(settings.value("client/serverHost").toString())
+        .arg(settings.value("client/serverPort").toUInt());
 
     QObject::connect(m_socket, &QTcpSocket::connected, this, [this]() {
         qDebug() << QString("Connected to server %1:%2.")
             .arg(m_socket->peerAddress().toString())
             .arg(m_socket->peerPort());
-            
-        // Send a welcome message followed by a SchoolRequest to use client school argument
+
+        // Send a greeting message.
         QDataStream out(m_socket);
         out.setVersion(QDataStream::Qt_6_0);
         out << NetworkMessage(NetworkMessage::StatusMessage, "Hello server!");
-        qDebug() << "From lambda, instance:" << this << "school:" << this->m_school;
-        out << NetworkMessage(NetworkMessage::SchoolRequest, this->m_school);
+
+        // Request student data for school.
+        qDebug() << "Requesting initial student data from server.";
+        out << NetworkMessage(NetworkMessage::StudentsRequest, m_school);
     });
 
 
     QObject::connect(m_socket, &QTcpSocket::readyRead, this, &StudentModel::readFromServer);
+
+    QObject::connect(m_socket, &QTcpSocket::disconnected, this, [this]() {
+        qDebug() << "Disconnected from server.";
+        m_socket->deleteLater();
+        m_socket = nullptr;
+
+        // After the initial fetch from the server, proceed to
+        // integrate data from the local database.
+        refreshFromLocalDatabase(true /* silent */);
+    });
 }
 
 void StudentModel::readFromServer()
 {
     QDataStream in(m_socket);
     in.setVersion(QDataStream::Qt_6_0);
-    
+
     while (!in.atEnd()){
         NetworkMessage *receivedMsg = new NetworkMessage();
         in >> *receivedMsg;
-        
+
         if (receivedMsg->type() == NetworkMessage::StatusMessage) {
             const QString &msgString = receivedMsg->payload().toString();
             qDebug() << "Received message from server:" << receivedMsg->payload().toString();
-        } else if (receivedMsg->type() == NetworkMessage::StorageConfirmation) {
-            const int id = receivedMsg->payload().toInt();
-            
-            qDebug() << "Received storage confirmation with id:" << id;
-            
-            // Update id from server.
-            if (m_lastStudentSent) {
-                m_lastStudentSent->setId(id);
-                
-                const int row = m_students.indexOf(m_lastStudentSent);
-                
-                if (row >= 0) {
-                    emit dataChanged(index(row, 0), index(row, columnCount() - 1));
-                }
-                
-                m_lastStudentSent = nullptr;
-            }
-            
-            m_storageConfirmed = true;
-            resetError();
-            emit storageSuccess();
         } else {
             QDataStream studentStream(receivedMsg->payload().toByteArray());
             studentStream.setVersion(QDataStream::Qt_6_0);
@@ -194,80 +191,99 @@ void StudentModel::readFromServer()
             qDebug() << "Received student from server:" << student;
             insertStudent(student);
         }
-        
+
         delete receivedMsg;
     }
 }
 
-void StudentModel::checkStorageConfirmed()
+void StudentModel::updateStudent(int id, int version, const QString &firstName,
+    const QString &middleName, const QString &lastName, int roll, const QString &className)
 {
-    if (!m_storageConfirmed) {
-        m_error = true;
-        m_errorString = QStringLiteral("Failed to save, please contact administrator");
-        emit errorChanged();
-        emit errorStringChanged();
-    }
-}
-
-void StudentModel::sendToServer(Student *student)
-{
+    resetUpdated();
     resetError();
-    
-    if (student && m_socket && m_socket->state() == QAbstractSocket::ConnectedState) {
-        m_storageConfirmed = false;
-        
-        QDataStream out(m_socket);
-        out.setVersion(QDataStream::Qt_6_0);
-        
-        QByteArray serializedStudent;
-        QDataStream studentStream(&serializedStudent, QIODeviceBase::WriteOnly);
-        studentStream.setVersion(QDataStream::Qt_6_0);
-        studentStream << *student;
-    
-        qDebug() << "Sending student to server:" << student;
-        out << NetworkMessage(NetworkMessage::StudentObject, serializedStudent);
-        
-        m_lastStudentSent = student;
-        
-        QTimer::singleShot(200, this, &StudentModel::checkStorageConfirmed);
-    } else {
-        qDebug() << "Unable to send to server.";
-        m_error = true;
-        m_errorString = QStringLiteral("Failed to save, please contact administrator");
-        emit errorChanged();
-        emit errorStringChanged();
-    }
-}
 
-void StudentModel::updateStudent(int id, const QString &firstName,
-        const QString &middleName, const QString &lastName, int roll, const QString &className/*, const QString &schoolName*/)
-{
+    Student *studentFromArgs = new Student(id, version, m_school,
+        firstName, middleName, lastName, roll, className);
+
     if (id == -1) {
-        Student *newStudent = new Student(nullptr, id, firstName, middleName, lastName, roll, className);
-        insertStudent(newStudent);
-        sendToServer(newStudent);
-        insertStudentToDB(*newStudent);
+        if (ClientDatabase::add(studentFromArgs)) {
+            insertStudent(studentFromArgs);
+            emit storageSuccess();
+        } else {
+            m_error = true;
+            m_errorString = QStringLiteral("Error inserting into database.");
+            emit errorChanged();
+            emit errorStringChanged();
+        }
     } else {
         for (int i = 0; i < m_students.length(); ++i) {
             Student *existingStudent = m_students.at(i);
-            
+
             if (existingStudent->id() == id) {
-                existingStudent->setFirstName(firstName);
-                existingStudent->setMiddleName(middleName);
-                existingStudent->setLastName(lastName);
-                existingStudent->setRoll(roll);
-                existingStudent->setClassName(className);
-//                existingStudent->setSchoolName(schoolName);
-                
-                emit dataChanged(index(i, 0), index(i, columnCount() - 1));
-                
-                sendToServer(existingStudent);
-                updateStudentInDB(*existingStudent);
-                
+                if (ClientDatabase::update(studentFromArgs)) {
+                    existingStudent->updateFrom(studentFromArgs);
+                    emit dataChanged(index(i, 0), index(i, columnCount() - 1));
+                    emit storageSuccess();
+                } else {
+                    refreshFromLocalDatabase(); // Sync to local db in case of update error (e.g. version conflict).
+
+                    m_error = true;
+                    m_errorString = QStringLiteral("Overwrite error! Green rows have been updated with new data from other clients.");
+                    emit errorChanged();
+                    emit errorStringChanged();
+                }
+
+                delete studentFromArgs;
                 break;
             }
         }
     }
+}
+
+void StudentModel::refreshFromLocalDatabase(bool silent)
+{
+    qDebug() << "Integrating current data from local database.";
+
+    const QVector<Student *> &students = ClientDatabase::students(m_school);
+
+    for (Student *dbStudent : std::as_const(students)) {
+        Student *existingStudent = nullptr;
+        int dbVersion = -1;
+
+        for (Student *s : std::as_const(m_students)) {
+            if (s->id() == dbStudent->id()) {
+                existingStudent = s;
+                break;
+            }
+        }
+
+        if (existingStudent) {
+            // Another client updated this student. Sync and inform the user.
+            if (dbStudent->version() > existingStudent->version()) {
+                existingStudent->updateFrom(dbStudent);
+                delete dbStudent;
+
+                if (!silent) {
+                    m_updatedFromLocal.append(dbStudent->id());
+                }
+
+                const int row = m_students.indexOf(existingStudent);
+                emit dataChanged(index(row, 0), index(row, columnCount() - 1));
+            }
+        } else { // Another client added a new student we didn't have yet.'
+            if (!silent) {
+                m_updatedFromLocal.append(dbStudent->id());
+            }
+
+            insertStudent(dbStudent);
+        }
+    }
+}
+
+void StudentModel::resetUpdated()
+{
+    m_updatedFromLocal.clear();
+    emit dataChanged(index(0, 0), index(m_students.length() - 1, 6));
 }
 
 void StudentModel::insertStudent(Student *student)
@@ -292,7 +308,7 @@ bool StudentModel::error() const
 
 QString StudentModel::errorString() const
 {
-    return m_errorString; 
+    return m_errorString;
 }
 
 void StudentModel::resetError()
@@ -303,91 +319,4 @@ void StudentModel::resetError()
         emit errorChanged();
         emit errorStringChanged();
     }
-}
-
-void StudentModel::classBegin()
-{
-}
-
-void StudentModel::componentComplete()
-{
-    connectToServer();
-}
-
-
-// Local database operations
-void StudentModel::insertStudentToDB(const Student &student) {
-    QSqlQuery query;
-    query.prepare("INSERT INTO students (firstName, middleName, lastName, roll, class, school, version) "
-                  "VALUES (:firstName, :middleName, :lastName, :roll, :class, :school, 1)");
-    query.bindValue(":firstName", student.firstName());
-    query.bindValue(":middleName", student.middleName());
-    query.bindValue(":lastName", student.lastName());
-    query.bindValue(":roll", student.roll());
-    query.bindValue(":class", student.className());
-    query.bindValue(":school", student.schoolName());
-    if (!query.exec()) {
-        qDebug() << "Error inserting student:" << query.lastError();
-    }
-}
-
-void StudentModel::updateStudentInDB(const Student &student) {
-
-    QSqlQuery query;
-    query.prepare("SELECT version FROM students WHERE id = :id");
-    query.bindValue(":id", student.id());
-    if (query.exec() && query.next()) {
-        const int currentVersion = query.value(0).toInt();
-        if (currentVersion != student.version()) {
-            emit versionConflictDetected(student.id(), currentVersion, student.version());
-            return;
-        }
-    } else
-    {
-    query.prepare("UPDATE students SET firstName = :firstName, middleName = :middleName, lastName = :lastName, "
-                  "roll = :roll, class = :class, school = :school, version = :version WHERE id = :id");
-    query.bindValue(":id", student.id());
-    query.bindValue(":firstName", student.firstName());
-    query.bindValue(":middleName", student.middleName());
-    query.bindValue(":lastName", student.lastName());
-    query.bindValue(":roll", student.roll());
-    query.bindValue(":class", student.className());
-    query.bindValue(":school", student.schoolName());
-    query.bindValue(":version", student.version() + 1); //Increment version number
-    if (!query.exec()) {
-        qDebug() << "Error updating student:" << query.lastError();
-        }
-    }
-}
-
-void StudentModel::deleteStudentFromDB(int studentId) {
-    QSqlQuery query;
-    query.prepare("DELETE FROM students WHERE id = :id");
-    query.bindValue(":id", studentId);
-    if (!query.exec()) {
-        qDebug() << "Error deleting student:" << query.lastError();
-    }
-}
-
-void StudentModel::loadStudentsFromDB() {
-    QSqlQuery query("SELECT * FROM students");
-
-    if (!query.next()) {
-        qDebug() << "No students in database.";
-        return;
-    }
-
-    QVector<Student*> students;
-
-    do {
-        Student *student = new Student(nullptr,
-            query.value("id").toInt(),
-            query.value("firstName").toString(),
-            query.value("middleName").toString(),
-            query.value("lastName").toString(),
-            query.value("roll").toInt(),
-            query.value("class").toString(),
-            query.value("school").toString());
-        students.append(student);
-    } while (query.next());
 }
