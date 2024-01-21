@@ -16,8 +16,8 @@ ClientDatabase::ClientDatabase(QObject *parent)
     // database among client instances. The write locking within sqlite itself
     // makes this safe.
     const QString &appDataDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)
-    + QDir::separator()
-    + QCoreApplication::instance()->applicationName();
+        + QDir::separator()
+        + QCoreApplication::instance()->applicationName();
 
     QDir dir(appDataDir);
 
@@ -32,8 +32,8 @@ ClientDatabase::ClientDatabase(QObject *parent)
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
 
     db.setDatabaseName(QDir::toNativeSeparators(appDataDir
-    + QDir::separator()
-    + QStringLiteral("students.db")));
+        + QDir::separator()
+        + QStringLiteral("students.db")));
 
     qDebug() << "Database file at:" << db.databaseName();
 
