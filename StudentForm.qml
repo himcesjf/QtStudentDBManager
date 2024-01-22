@@ -42,6 +42,9 @@ GridLayout {
             model.resetError();
             model.resetUpdated();
         }
+
+        successMsg.visible = false;
+        sync();
     }
 
     function sync() {
