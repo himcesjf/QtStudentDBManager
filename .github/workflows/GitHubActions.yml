@@ -43,13 +43,16 @@ jobs:
             cmake -B build -S .
             make -C build
 
-    - name: Run Server
-      run: ./build/server
+#    - name: Run Server
+#      run: ./build/server
+#
+#    - name: Run Client
+#      run: ./build/client
+#
+#    - name: Run Sync
+#      run: ./build/sync
 
-    - name: Run Client
-      run: ./build/client
-
-    - name: Run Sync
-      run: ./build/sync
-
+    - name: Uploading archive Dir to GH.
+            uses: actions/upload-artifact@v3
+            path: ${{ github.workspace }}/build
 
