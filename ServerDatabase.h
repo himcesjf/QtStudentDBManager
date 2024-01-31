@@ -8,8 +8,9 @@
 
 #include <QObject>
 #include <QSqlDatabase>
+#include "Student.h"
 
-class Student;
+//class Student;
 
 
 class ServerDatabase : public QObject {
