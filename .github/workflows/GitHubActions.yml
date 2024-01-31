@@ -23,7 +23,7 @@ jobs:
       run: |
             sudo apt-get update
             sudo apt-get install -y build-essential libgl1-mesa-dev git cmake gettext
-            sudo apt-get install qt6-base-dev qt6-network-dev qt6-qml-dev qt6-quick-dev qt6-sql-dev
+            sudo apt-get install -y qt6-base-dev qt6-network-dev qt6-qml-dev qt6-quick-dev qt6-sql-dev
 #            sudo apt-get install -y qtbase6-dev qtdeclarative5-dev qtquickcontrols2-5-dev libqt5remoteobjects5-dev libqt5serialport5-dev libkf5config-dev
 #            sudo apt-get install -y libkf5coreaddons-dev libkf5i18n-dev extra-cmake-modules
 
