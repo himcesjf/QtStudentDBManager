@@ -2,9 +2,11 @@ name: QtStudentDBManagerCI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ network ]
   pull_request:
-    branches: [ main ]
+    branches:
+      - "master"
+      - "network"
   workflow_dispatch:
 
 jobs:
