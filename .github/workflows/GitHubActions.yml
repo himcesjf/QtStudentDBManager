@@ -25,11 +25,10 @@ jobs:
     - name: Create Build Directory
       run: mkdir build
 
-    - name: Run CMake
-      run: cmake -B build -S .
-
-    - name: Run Build
-      run: make
+    - name: Run CMake and build
+      run: |
+            cmake -B build -S .
+            make
 
     - name: Run Server
       run: ./build/server
@@ -39,6 +38,5 @@ jobs:
 
     - name: Run Sync
       run: ./build/sync
-
 
 
