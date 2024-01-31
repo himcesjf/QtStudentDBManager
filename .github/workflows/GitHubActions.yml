@@ -1,26 +1,26 @@
 name: QtStudentDBManagerCI
 
 on:
-  push:
-    branches: [ network ]
-  pull_request:
-    branches:
-      - "master"
-      - "network"
-  workflow_dispatch:
+    push:
+        branches: [ network ]
+    pull_request:
+        branches:
+            - "master"
+            - "network"
+    workflow_dispatch:
 
 jobs:
-  build:
+    build:
 
-    runs-on: ubuntu-latest
+        runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v3
-      with:
+        steps:
+            - uses: actions/checkout@v3
+        with:
         submodules: recursive
 
     - name: Install Qt
-      run: |
+        run: |
             sudo apt-get update
             sudo apt-get install -y build-essential libgl1-mesa-dev git cmake gettext
             sudo apt-get install -y qt6*
@@ -36,10 +36,10 @@ jobs:
 #        what all things modules
 
     - name: Create Build Directory
-      run: mkdir build
+        run: mkdir build
 
     - name: Run CMake and build
-      run: |
+        run: |
             cmake -B build -S .
             make -C build
 
@@ -53,6 +53,6 @@ jobs:
 #      run: ./build/sync
 
     - name: Uploading archive Dir to GH.
-            uses: actions/upload-artifact@v3
-            path: ${{ github.workspace }}/build
+        uses: actions/upload-artifact@v3
+        path: ${{ github.workspace }}/build
 
