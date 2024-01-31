@@ -41,7 +41,7 @@ jobs:
     - name: Run CMake and build
       run: |
             cmake -B build -S .
-            make
+            make -C build
 
     - name: Run Server
       run: ./build/server
